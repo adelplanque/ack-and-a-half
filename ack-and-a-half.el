@@ -370,25 +370,6 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
       (push "--literal" arguments))
     arguments))
 
-(defun ack-and-a-half-string-replace (from to string &optional re)
-  "Replace all occurrences of FROM with TO in STRING.
-All arguments are strings.  When optional fourth argument (RE) is
-non-nil, treat FROM as a regular expression."
-  (let ((pos 0)
-        (res "")
-        (from (if re from (regexp-quote from))))
-    (while (< pos (length string))
-      (if (setq beg (string-match from string pos))
-          (progn
-            (setq res (concat res
-                              (substring string pos (match-beginning 0))
-                              to))
-            (setq pos (match-end 0)))
-        (progn
-          (setq res (concat res (substring string pos (length string))))
-          (setq pos (length string)))))
-    res))
-
 (defun ack-and-a-half-run (directory regexp pattern &rest arguments)
   "Run ack in DIRECTORY with ARGUMENTS."
   (let ((default-directory (if directory
