@@ -186,6 +186,15 @@ confirmed.  If t, then always prompt for the directory to use."
   "Whether or not ack-and-a-half should use ido to provide
   completion suggestions when prompting for directory.")
 
+(defcustom ack-and-a-half-ignore-dirs nil
+  "List of directories to be ignored by ack command.
+
+This will be append as `--ignore-dir' parameters of the `ack' commande.
+Variable is Buffer-Local and can be customized differently depending on the mode."
+  :group 'ack-and-a-half
+  :type '(list))
+(make-variable-buffer-local 'ack-and-a-half-ignore-dirs)
+
 ;;; Default setting lists ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defconst ack-and-a-half-mode-type-default-alist
@@ -386,14 +395,19 @@ non-nil, treat FROM as a regular expression."
   (let ((default-directory (if directory
                                (file-name-as-directory (expand-file-name directory))
                              default-directory)))
-    (setq arguments (append ack-and-a-half-arguments
-                            (ack-and-a-half-arguments-from-options regexp)
-                            arguments
-                            (list "--")
-                            (list (shell-quote-argument pattern))
-                            (when (eq system-type 'windows-nt)
-                              (list (concat " < " null-device)))
-                            ))
+    (setq arguments
+          (append ack-and-a-half-arguments
+                  (ack-and-a-half-arguments-from-options regexp)
+                  (let (res)
+                    (dolist (var ack-and-a-half-ignore-dirs res)
+                      (setq res (append res (list "--ignore-dir" (shell-quote-argument var)))))
+                    res)
+                  arguments
+                  (list "--")
+                  (list (shell-quote-argument pattern))
+                  (when (eq system-type 'windows-nt)
+                    (list (concat " < " null-device)))
+                  ))
     (make-local-variable 'compilation-buffer-name-function)
     (let (compilation-buffer-name-function)
       (setq compilation-buffer-name-function 'ack-buffer-name)
