@@ -183,7 +183,8 @@ confirmed.  If t, then always prompt for the directory to use."
 
 (defcustom ack-and-a-half-use-ido nil
   "Whether or not ack-and-a-half should use ido to provide
-  completion suggestions when prompting for directory.")
+  completion suggestions when prompting for directory."
+  :type 'boolean)
 
 (defcustom ack-and-a-half-ignore-dirs nil
   "List of directories to be ignored by ack command.
