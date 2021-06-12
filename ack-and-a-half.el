@@ -63,7 +63,6 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'cl))
 (require 'compile)
 (require 'grep)
 (require 'thingatpt)
