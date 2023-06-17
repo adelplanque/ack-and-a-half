@@ -148,9 +148,10 @@ Giving a prefix argument to `ack-and-a-half' toggles this option."
 
 (defcustom ack-and-a-half-root-directory-functions '(ack-and-a-half-guess-project-root)
   "*List of functions used to find the base directory to ack from.
-These functions are called until one returns a directory.  If successful,
-`ack-and-a-half' is run from that directory instead of from `default-directory'.
-The directory is verified by the user depending on `ack-and-a-half-prompt-for-directory'."
+These functions are called until one returns a directory. If
+successful, `ack-and-a-half' is run from that directory instead
+of from `default-directory'. The directory is verified by the
+user depending on `ack-and-a-half-prompt-for-directory'."
   :group 'ack-and-a-half
   :type '(repeat function))
 
@@ -163,10 +164,11 @@ The directory is verified by the user depending on `ack-and-a-half-prompt-for-di
     "\\`.bzr\\'"
     "\\`_darcs\\'"
     "\\`.hg\\'")
-  "*List of file patterns for the project root (used by `ack-and-a-half-guess-project-root').
-Each element is a regular expression.  If a file matching any element is
-found in a directory, then that directory is assumed to be the project
-root by `ack-and-a-half-guess-project-root'."
+  "*List of file patterns for the project root (used by
+`ack-and-a-half-guess-project-root').  Each element is a regular
+expression.  If a file matching any element is found in a
+directory, then that directory is assumed to be the project root
+by `ack-and-a-half-guess-project-root'."
   :group 'ack-and-a-half
   :type '(repeat (string :tag "Regular expression")))
 
@@ -189,8 +191,9 @@ confirmed.  If t, then always prompt for the directory to use."
 (defcustom ack-and-a-half-ignore-dirs nil
   "List of directories to be ignored by ack command.
 
-This will be append as `--ignore-dir' parameters of the `ack' commande.
-Variable is Buffer-Local and can be customized differently depending on the mode."
+This will be append as `--ignore-dir' parameters of the `ack'
+commande.  Variable is Buffer-Local and can be customized
+differently depending on the mode."
   :group 'ack-and-a-half
   :type '(list))
 (make-variable-buffer-local 'ack-and-a-half-ignore-dirs)
@@ -346,7 +349,8 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
   (if a (not b) b))
 
 (defun ack-and-a-half-interactive ()
-  "Return the (interactive) arguments for `ack-and-a-half' and `ack-and-a-half-same'."
+  "Return the (interactive) arguments for `ack-and-a-half' and
+`ack-and-a-half-same'."
   (let ((regexp (ack-and-a-half-xor current-prefix-arg ack-and-a-half-regexp-search)))
     (list (ack-and-a-half-read regexp)
           regexp
