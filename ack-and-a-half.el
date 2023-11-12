@@ -127,10 +127,10 @@ running `ack-and-a-half-same'."
 
 (defcustom ack-and-a-half-ignore-case 'smart
   "*Whether or not to ignore case when searching.
-The special value 'smart enables the ack option \"smart-case\"."
+The special value \\='smart enables the ack option \"smart-case\"."
   :group 'ack-and-a-half
   :type '(choice (const :tag "Case sensitive" nil)
-                 (const :tag "Smart case" 'smart)
+                 (const :tag "Smart case" smart)
                  (const :tag "Case insensitive" t)))
 
 (defcustom ack-and-a-half-regexp-search t
@@ -148,9 +148,9 @@ Giving a prefix argument to `ack-and-a-half' toggles this option."
 
 (defcustom ack-and-a-half-root-directory-functions '(ack-and-a-half-guess-project-root)
   "*List of functions used to find the base directory to ack from.
-These functions are called until one returns a directory. If
+These functions are called until one returns a directory.  If
 successful, `ack-and-a-half' is run from that directory instead
-of from `default-directory'. The directory is verified by the
+of from `default-directory'.  The directory is verified by the
 user depending on `ack-and-a-half-prompt-for-directory'."
   :group 'ack-and-a-half
   :type '(repeat function))
@@ -164,17 +164,16 @@ user depending on `ack-and-a-half-prompt-for-directory'."
     "\\`.bzr\\'"
     "\\`_darcs\\'"
     "\\`.hg\\'")
-  "*List of file patterns for the project root (used by
-`ack-and-a-half-guess-project-root').  Each element is a regular
-expression.  If a file matching any element is found in a
-directory, then that directory is assumed to be the project root
-by `ack-and-a-half-guess-project-root'."
+  "*List of file patterns for the project root.
+Each element is a regular expression.  If a file matching any
+element is found in a directory, then that directory is assumed
+to be the project root by `ack-and-a-half-guess-project-root'."
   :group 'ack-and-a-half
   :type '(repeat (string :tag "Regular expression")))
 
 (defcustom ack-and-a-half-prompt-for-directory 'unless-guessed
   "*Prompt for directory in which to run ack.
-If this is 'unless-guessed, then the value determined by
+If this is \\='unless-guessed, then the value determined by
 `ack-and-a-half-root-directory-functions' is used without
 confirmation.  If it is nil, then the directory is never
 confirmed.  If t, then always prompt for the directory to use."
