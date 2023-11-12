@@ -427,7 +427,7 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
     (call-process ack-and-a-half-executable nil t nil "--version")
     (goto-char (point-min))
     (re-search-forward " +")
-    (buffer-substring (point) (point-at-eol))))
+    (buffer-substring (point) (line-end-position))))
 
 (defun ack-and-a-half-mode-setup ()
   "Setup compilation variables and buffer for `ack-and-a-half'.
