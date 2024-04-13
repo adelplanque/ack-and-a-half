@@ -93,7 +93,7 @@
   :type 'file)
 
 (defcustom ack-and-a-half-buffer-name "*Ack-and-a-half*"
-  "*The name of the ack-and-a-half buffer."
+  "*The name of the `ack-and-a-half' buffer."
   :group 'ack-and-a-half
   :type 'string)
 
@@ -181,8 +181,8 @@ confirmed.  If t, then always prompt for the directory to use."
                  (const :tag "Always prompt" t)))
 
 (defcustom ack-and-a-half-use-ido nil
-  "Whether or not ack-and-a-half should use ido to provide
-  completion suggestions when prompting for directory."
+  "Whether or not `ack-and-a-half' should use ido.
+Used to provide completion suggestions when prompting for directory."
   :type 'boolean)
 
 (defcustom ack-and-a-half-ignore-dirs nil
@@ -332,6 +332,7 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
                  default)))
 
 (defun ack-and-a-half-read-dir ()
+  "Ask user for a directory."
   (let ((dir (run-hook-with-args-until-success 'ack-and-a-half-root-directory-functions)))
     (if ack-and-a-half-prompt-for-directory
         (if (and dir (eq ack-and-a-half-prompt-for-directory 'unless-guessed))
@@ -347,14 +348,15 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
   (if a (not b) b))
 
 (defun ack-and-a-half-interactive ()
-  "Return the (interactive) arguments for `ack-and-a-half' and
-`ack-and-a-half-same'."
+  "Return the (interactive) arguments.
+Used by `ack-and-a-half' and `ack-and-a-half-same'."
   (let ((regexp (ack-and-a-half-xor current-prefix-arg ack-and-a-half-regexp-search)))
     (list (ack-and-a-half-read regexp)
           regexp
           (ack-and-a-half-read-dir))))
 
 (defun ack-and-a-half-type ()
+  "Return type argument to pass to ack command."
   (or (ack-and-a-half-type-for-major-mode major-mode)
       (when buffer-file-name
         (ack-and-a-half-create-type (list (file-name-extension buffer-file-name))))))
@@ -363,6 +365,8 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
   (format "--%s%s" (if enabled "" "no") name))
 
 (defun ack-and-a-half-arguments-from-options (regexp)
+  "Build arguments for ack command.
+When REGEXP is nil use literal search"
   (let ((arguments (list "--nocolor" "--nogroup" "--column"
                          (ack-and-a-half-option "smart-case" (eq ack-and-a-half-ignore-case 'smart))
                          (ack-and-a-half-option "env" ack-and-a-half-use-environment))))
@@ -376,7 +380,8 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
     arguments))
 
 (defun ack-and-a-half-run (directory regexp pattern &rest arguments)
-  "Run ack in DIRECTORY with ARGUMENTS."
+  "Run ack to search PATTERN in DIRECTORY with ARGUMENTS.
+When REGEXP is nil, use literal search."
   (let ((default-directory (if directory
                                (file-name-as-directory (expand-file-name directory))
                              default-directory)))
@@ -387,8 +392,7 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
                   (list "--")
                   (list (shell-quote-argument pattern))
                   (when (eq system-type 'windows-nt)
-                    (list (concat " < " null-device)))
-                  ))
+                    (list (concat " < " null-device)))))
     (make-local-variable 'compilation-buffer-name-function)
     (let ((compilation-buffer-name-function (lambda (mode) ack-and-a-half-buffer-name)))
       (compilation-start (mapconcat 'identity (nconc (list ack-and-a-half-executable) arguments) " ")
