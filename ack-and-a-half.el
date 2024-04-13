@@ -228,6 +228,7 @@ differently depending on the mode."
     (lua-mode "lua")
     (makefile-gmake-mode "make")
     (makefile-mode "make")
+    (markdown-mode "markdown")
     (mason-mode "mason")
     (nxml-mode "xml")
     (objc-mode "objc" "objcpp")
