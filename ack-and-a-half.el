@@ -194,7 +194,7 @@ This will be append as `--ignore-dir' parameters of the `ack'
 commande.  Variable is Buffer-Local and can be customized
 differently depending on the mode."
   :group 'ack-and-a-half
-  :type '(list))
+  :type '(repeat string))
 (make-variable-buffer-local 'ack-and-a-half-ignore-dirs)
 
 ;;; Default setting lists ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -34,7 +34,7 @@ by customize `ack-and-a-half-ignore-dirs` list.
 
 * To ignore `build` directory in `python-mode`:
   ```el
-  (add-hook 'python-mode-hook lambda () (setq ack-and-a-half-ignore-dirs '("build")))
+  (add-hook 'python-mode-hook (lambda () (setq ack-and-a-half-ignore-dirs '("build"))))
   ```
 
 * To ignore `foo` directory for a project, in `.dir-locals.el` at the top level of the project:
