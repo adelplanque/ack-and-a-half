@@ -97,8 +97,6 @@
   :group 'ack-and-a-half
   :type 'string)
 
-(defun ack-buffer-name (mode) ack-and-a-half-buffer-name)
-
 (defcustom ack-and-a-half-arguments nil
   "*Extra arguments to pass to ack."
   :group 'ack-and-a-half
@@ -367,8 +365,10 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
 (defun ack-and-a-half-arguments-from-options (regexp)
   (let ((arguments (list "--nocolor" "--nogroup" "--column"
                          (ack-and-a-half-option "smart-case" (eq ack-and-a-half-ignore-case 'smart))
-                         (ack-and-a-half-option "env" ack-and-a-half-use-environment)
-                         )))
+                         (ack-and-a-half-option "env" ack-and-a-half-use-environment))))
+    (when ack-and-a-half-ignore-dirs
+      (dolist (item ack-and-a-half-ignore-dirs)
+        (setq arguments (append arguments `("--ignore-dir" ,(shell-quote-argument item))))))
     (unless ack-and-a-half-ignore-case
       (push "-i" arguments))
     (unless regexp
@@ -383,10 +383,6 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
     (setq arguments
           (append ack-and-a-half-arguments
                   (ack-and-a-half-arguments-from-options regexp)
-                  (let (res)
-                    (dolist (var ack-and-a-half-ignore-dirs res)
-                      (setq res (append res (list "--ignore-dir" (shell-quote-argument var)))))
-                    res)
                   arguments
                   (list "--")
                   (list (shell-quote-argument pattern))
@@ -394,8 +390,7 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
                     (list (concat " < " null-device)))
                   ))
     (make-local-variable 'compilation-buffer-name-function)
-    (let (compilation-buffer-name-function)
-      (setq compilation-buffer-name-function 'ack-buffer-name)
+    (let ((compilation-buffer-name-function (lambda (mode) ack-and-a-half-buffer-name)))
       (compilation-start (mapconcat 'identity (nconc (list ack-and-a-half-executable) arguments) " ")
                          'ack-and-a-half-mode))))
 
