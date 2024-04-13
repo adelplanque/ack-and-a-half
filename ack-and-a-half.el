@@ -260,9 +260,9 @@ differently depending on the mode."
   "Default values for `ack-and-a-half-mode-extension-alist'.")
 
 (defun ack-and-a-half-create-type (extensions)
-  (list "--type-set"
-        (concat "ack-and-a-half-custom-type=" (mapconcat 'identity extensions ","))
-        "--type" "ack-and-a-half-custom-type"))
+  "Ack options to filter files by EXTENSIONS."
+  (list "--type" "customtype" "--type-set"
+        (concat "customtype:ext:" (mapconcat 'identity extensions ","))))
 
 (defun ack-and-a-half-type-for-major-mode (mode)
   "Return the --type and --type-set arguments to use with ack for major mode MODE."
