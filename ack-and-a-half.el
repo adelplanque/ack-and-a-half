@@ -213,6 +213,7 @@ differently depending on the mode."
     (erlang-mode "erlang")
     (espresso-mode "java")
     (fortran-mode "fortran")
+    (go-mode "go")
     (haskell-mode "haskell")
     (hexl-mode "binary")
     (html-mode "html")
