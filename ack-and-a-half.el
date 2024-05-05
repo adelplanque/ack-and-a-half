@@ -383,20 +383,23 @@ When REGEXP is nil use literal search"
 (defun ack-and-a-half-run (directory regexp pattern &rest arguments)
   "Run ack to search PATTERN in DIRECTORY with ARGUMENTS.
 When REGEXP is nil, use literal search."
-  (let ((default-directory (if directory
-                               (file-name-as-directory (expand-file-name directory))
-                             default-directory)))
-    (setq arguments
-          (append ack-and-a-half-arguments
-                  (ack-and-a-half-arguments-from-options regexp)
-                  arguments
-                  (list "--")
-                  (list (shell-quote-argument pattern))
-                  (when (eq system-type 'windows-nt)
-                    (list (concat " < " null-device)))))
-    (let ((compilation-buffer-name-function (lambda (mode) ack-and-a-half-buffer-name)))
-      (compilation-start (mapconcat 'identity (nconc (list ack-and-a-half-executable) arguments) " ")
-                         'ack-and-a-half-mode))))
+  (let* ((default-directory (if directory
+                                (file-name-as-directory (expand-file-name directory))
+                              default-directory))
+         (cmd (append (list ack-and-a-half-executable)
+                      ack-and-a-half-arguments
+                      (ack-and-a-half-arguments-from-options regexp)
+                      arguments
+                      (list "--" (shell-quote-argument pattern))
+                      (when (eq system-type 'windows-nt)
+                        (list (concat " < " null-device)))))
+         (buf (compilation-start (string-join cmd " ")
+                                  'ack-and-a-half-mode
+                                  (lambda (mode) ack-and-a-half-buffer-name))))
+    (with-current-buffer buf
+      (symbol-overlay-remove-all)
+      (setq symbol-overlay-keywords-alist nil)
+      (symbol-overlay-put-all pattern nil))))
 
 (defun ack-and-a-half-read-file (prompt choices)
   (if ido-mode
