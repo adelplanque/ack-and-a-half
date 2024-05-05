@@ -394,7 +394,6 @@ When REGEXP is nil, use literal search."
                   (list (shell-quote-argument pattern))
                   (when (eq system-type 'windows-nt)
                     (list (concat " < " null-device)))))
-    (make-local-variable 'compilation-buffer-name-function)
     (let ((compilation-buffer-name-function (lambda (mode) ack-and-a-half-buffer-name)))
       (compilation-start (mapconcat 'identity (nconc (list ack-and-a-half-executable) arguments) " ")
                          'ack-and-a-half-mode))))
