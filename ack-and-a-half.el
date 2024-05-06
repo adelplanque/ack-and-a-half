@@ -313,8 +313,10 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
     (buffer-substring-no-properties (region-beginning) (region-end))))
 
 (defun ack-and-a-half-default-for-read ()
-  (unless (ack-and-a-half-use-region-p)
-    (thing-at-point 'symbol)))
+  "Determine the pattern to search based on the buffer context."
+  (let ((pattern (unless (ack-and-a-half-use-region-p) (thing-at-point 'symbol))))
+    (set-text-properties 0 (length pattern) nil pattern)
+    pattern))
 
 (defun ack-and-a-half-use-region-p ()
   (or (and (fboundp 'use-region-p) (use-region-p))
