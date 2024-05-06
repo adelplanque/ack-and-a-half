@@ -1,4 +1,4 @@
-;;; ack-and-a-half.el --- Yet another front-end for ack
+;;; ack-and-a-half.el --- Yet another front-end for ack -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2013 Jacob Helwig <jacob@technosorcery.net>
 ;; Alexey Lebedeff <binarin@binarin.ru>
