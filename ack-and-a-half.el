@@ -324,7 +324,6 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
 (defsubst ack-and-a-half-read (regexp)
   (let* ((default (ack-and-a-half-default-for-read))
          (type (if regexp "pattern" "literal search"))
-         (history-var )
          (prompt  (if default
                       (format "ack %s (default %s): " type default)
                     (format "ack %s: " type))))
@@ -396,7 +395,7 @@ When REGEXP is nil, use literal search."
                         (list (concat " < " null-device)))))
          (buf (compilation-start (string-join cmd " ")
                                   'ack-and-a-half-mode
-                                  (lambda (mode) ack-and-a-half-buffer-name))))
+                                  (lambda (&rest _) ack-and-a-half-buffer-name))))
     (when (member 'symbol-overlay features)
       (with-current-buffer buf
         (symbol-overlay-remove-all)
