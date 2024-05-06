@@ -67,6 +67,8 @@
 (require 'grep)
 (require 'thingatpt)
 
+(defvar ack-and-a-half--symbol-overlay (require 'symbol-overlay nil t))
+
 (add-to-list 'debug-ignored-errors
              "^Moved \\(back before fir\\|past la\\)st match$")
 (add-to-list 'debug-ignored-errors "^File .* not found$")
@@ -396,10 +398,11 @@ When REGEXP is nil, use literal search."
          (buf (compilation-start (string-join cmd " ")
                                   'ack-and-a-half-mode
                                   (lambda (mode) ack-and-a-half-buffer-name))))
-    (with-current-buffer buf
-      (symbol-overlay-remove-all)
-      (setq symbol-overlay-keywords-alist nil)
-      (symbol-overlay-put-all pattern nil))))
+    (when ack-and-a-half--symbol-overlay
+      (with-current-buffer buf
+        (symbol-overlay-remove-all)
+        (setq symbol-overlay-keywords-alist nil)
+        (symbol-overlay-put-all pattern nil)))))
 
 (defun ack-and-a-half-read-file (prompt choices)
   (if ido-mode
