@@ -68,10 +68,6 @@
 (require 'thingatpt)
 (require 'symbol-overlay nil t)
 
-(add-to-list 'debug-ignored-errors
-             "^Moved \\(back before fir\\|past la\\)st match$")
-(add-to-list 'debug-ignored-errors "^File .* not found$")
-
 (define-compilation-mode ack-and-a-half-mode "Ack"
   "Ack results compilation mode."
   (set (make-local-variable 'truncate-lines) t)
