@@ -69,15 +69,15 @@
 (require 'symbol-overlay nil t)
 
 (define-compilation-mode ack-and-a-half-mode "Ack"
-  "Ack results compilation mode."
-  (set (make-local-variable 'truncate-lines) t)
-  (set (make-local-variable 'compilation-disable-input) t)
+  "Major mode for viewing ack search results."
+  (setq-local truncate-lines t)
+  (setq-local compilation-disable-input t)
+  (setq-local compilation-process-setup-function #'ack-and-a-half-mode-setup)
+  (setq-local compilation-error-face grep-hit-face)
   (let ((smbl  'compilation-ack-nogroup)
         (pttrn '("^\\([^:\n]+?\\):\\([0-9]+\\):\\([0-9]+\\):" 1 2 3)))
-    (set (make-local-variable 'compilation-error-regexp-alist) (list smbl))
-    (set (make-local-variable 'compilation-error-regexp-alist-alist) (list (cons smbl pttrn))))
-  (set (make-local-variable 'compilation-process-setup-function) 'ack-and-a-half-mode-setup)
-  (set (make-local-variable 'compilation-error-face) grep-hit-face))
+    (setq-local compilation-error-regexp-alist (list smbl))
+    (setq-local compilation-error-regexp-alist-alist (list (cons smbl pttrn)))))
 
 (defgroup ack-and-a-half nil "Yet another front end for ack."
   :group 'tools
