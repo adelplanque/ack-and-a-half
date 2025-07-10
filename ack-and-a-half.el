@@ -1,47 +1,37 @@
 ;;; ack-and-a-half.el --- Yet another front-end for ack -*- lexical-binding: t; -*-
 ;;
+;; Copyright (C) 2009 Nikolaj Schumacher
 ;; Copyright (C) 2013 Jacob Helwig <jacob@technosorcery.net>
-;; Alexey Lebedeff <binarin@binarin.ru>
-;; Andrew Pennebaker <andrew.pennebaker@gmail.com>
-;; Andrew Stine <stine.drew@gmail.com>
-;; Derek Chen-Becker <derek@precog.com>
-;; Gleb Peregud <gleber.p@gmail.com>
-;; Kim van Wyk <vanwykk@gmail.com>
-;; Lars Andersen <expez@expez.com>
-;; Ronaldo M. Ferraz <ronaldoferraz@gmail.com>
-;; Ryan Thompson <rct@thompsonclan.org>
+;; Copyright (C) 2013-2025 Various contributors
+;; Copyright (C) 2025 Alain Delplanque
 ;;
 ;; Author: Jacob Helwig <jacob+ack@technosorcery.net>
-;; Homepage: http://technosorcery.net
+;; Maintainer: Alain Delplanque <alaindelplanque@mailoo.org>
+;; URL: https://github.com/adelplanque/ack-and-a-half
 ;; Version: 1.2.0
-;; URL: https://github.com/jhelwig/ack-and-a-half
+;; Package-Requires: ((emacs "24.3"))
+;; Keywords: tools, search, ack
+;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
-;; This file is NOT part of GNU Emacs.
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 ;;
-;; Permission is hereby granted, free of charge, to any person obtaining a copy of
-;; this software and associated documentation files (the "Software"), to deal in
-;; the Software without restriction, including without limitation the rights to
-;; use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-;; of the Software, and to permit persons to whom the Software is furnished to do
-;; so, subject to the following conditions:
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
 ;;
-;; The above copyright notice and this permission notice shall be included in all
-;; copies or substantial portions of the Software.
-;;
-;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-;; SOFTWARE.
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ;;
 ;;; Commentary:
 ;;
-;; ack-and-a-half.el provides a simple compilation mode for the perl
-;; grep-a-like ack (http://petdance.com/ack/).
+;; ack-and-a-half.el provides a simple compilation mode for the Perl grep-like
+;; tool "ack" (https://beyondgrep.com/).
 ;;
-;; Add the following to your .emacs:
+;; Add the following to your init file:
 ;;
 ;;     (add-to-list 'load-path "/path/to/ack-and-a-half")
 ;;     (require 'ack-and-a-half)
@@ -50,16 +40,23 @@
 ;;     (defalias 'ack-find-file 'ack-and-a-half-find-file)
 ;;     (defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
 ;;
-;; Run `ack' to search for all files and `ack-same' to search for
-;; files of the same type as the current buffer.
+;; Run `ack-and-a-half' to search all files, or `ack-and-a-half-same' to search
+;; only files of the same type as the current buffer.  Use `next-error' /
+;; `previous-error' to navigate between results.
 ;;
-;; `next-error' and `previous-error' can be used to jump to the
-;; matches.
 ;;
-;; `ack-find-file' and `ack-find-same-file' use ack to list the files
-;; in the current project.  It's a convenient, though slow, way of
-;; finding files.
+;; `ack-find-file' and `ack-find-file-same' use ack to list project files,
+;; useful as a file navigator.
 ;;
+;; ----
+;;
+;; This package is a maintained fork of `ack-and-a-half.el`, originally authored
+;; by Jacob Helwig and contributors.  That version was itself a near-complete
+;; rewrite of `full-ack.el` by Nikolaj Schumacher (GPLv2+).
+;;
+;; The fork appears to have diverged informally before public Git history
+;; (pre-2009), without formal license continuity.  This version restores GPL
+;; licensing and historical attribution accordingly.
 
 ;;; Code:
 
