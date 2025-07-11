@@ -44,7 +44,6 @@
 ;; only files of the same type as the current buffer.  Use `next-error' /
 ;; `previous-error' to navigate between results.
 ;;
-;;
 ;; `ack-find-file' and `ack-find-file-same' use ack to list project files,
 ;; useful as a file navigator.
 ;;
@@ -253,7 +252,7 @@ differently depending on the mode."
   "Default values for `ack-and-a-half-mode-extension-alist'.")
 
 (defun ack-and-a-half-create-type (extensions)
-  "Ack options to filter files by EXTENSIONS."
+  "Create ack options to filter files by EXTENSIONS."
   (list "--type" "customtype" "--type-set"
         (concat "customtype:ext:" (mapconcat 'identity extensions ","))))
 
@@ -302,21 +301,24 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
   "Extra args recents passed to ack with `ack-and-a-half-with-args'.")
 
 (defun ack-and-a-half-initial-contents-for-read ()
+  "Return the initial contents for reading input based on the active region."
   (when (ack-and-a-half-use-region-p)
     (buffer-substring-no-properties (region-beginning) (region-end))))
 
 (defun ack-and-a-half-default-for-read ()
-  "Determine the pattern to search based on the buffer context."
+  "Determine the default pattern to search based on the buffer context."
   (let ((pattern (unless (ack-and-a-half-use-region-p) (thing-at-point 'symbol))))
     (set-text-properties 0 (length pattern) nil pattern)
     pattern))
 
 (defun ack-and-a-half-use-region-p ()
+  "Check if a non-empty region is active in the buffer."
   (or (and (fboundp 'use-region-p) (use-region-p))
       (and transient-mark-mode mark-active
            (> (region-end) (region-beginning)))))
 
 (defsubst ack-and-a-half-read (regexp)
+  "Read a search pattern from the user, choosing history according to REGEXP."
   (let* ((default (ack-and-a-half-default-for-read))
          (type (if regexp "pattern" "literal search"))
          (prompt  (if default
@@ -328,7 +330,7 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
                  default)))
 
 (defun ack-and-a-half-read-dir ()
-  "Ask user for a directory."
+  "Prompt the user for a directory to search in."
   (let ((dir (run-hook-with-args-until-success 'ack-and-a-half-root-directory-functions)))
     (if ack-and-a-half-prompt-for-directory
         (if (and dir (eq ack-and-a-half-prompt-for-directory 'unless-guessed))
@@ -341,11 +343,11 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
           default-directory))))
 
 (defsubst ack-and-a-half-xor (a b)
+  "Return t if exactly one of the arguments A or B is non-nil."
   (if a (not b) b))
 
 (defun ack-and-a-half-interactive ()
-  "Return the (interactive) arguments.
-Used by `ack-and-a-half' and `ack-and-a-half-same'."
+  "Return the interactive arguments for `ack-and-a-half' and `ack-and-a-half-same'."
   (let ((regexp (ack-and-a-half-xor current-prefix-arg ack-and-a-half-regexp-search)))
     (list (ack-and-a-half-read regexp)
           regexp
@@ -358,6 +360,7 @@ Used by `ack-and-a-half' and `ack-and-a-half-same'."
         (ack-and-a-half-create-type (list (file-name-extension buffer-file-name))))))
 
 (defun ack-and-a-half-option (name enabled)
+  "Format cli flag --name/--noname according to NAME and boolean ENABLED."
   (format "--%s%s" (if enabled "" "no") name))
 
 (defun ack-and-a-half-arguments-from-options (regexp)
@@ -398,6 +401,7 @@ When REGEXP is nil, use literal search."
         (symbol-overlay-put-all pattern nil)))))
 
 (defun ack-and-a-half-read-file (prompt choices)
+  "Prompt user with PROMPT to choose a file from CHOICES."
   (if ido-mode
       (ido-completing-read prompt choices nil t)
     (require 'iswitchb)
@@ -407,6 +411,7 @@ When REGEXP is nil, use literal search."
         (iswitchb-read-buffer prompt nil t)))))
 
 (defun ack-and-a-half-list-files (directory &rest arguments)
+  "Return a list of files in DIRECTORY using ack command with ARGUMENTS."
   (with-temp-buffer
     (let ((default-directory directory))
       (when (eq 0 (apply 'call-process ack-and-a-half-executable nil t nil "-f" "--print0"
@@ -445,19 +450,19 @@ Set up `compilation-exit-message-function'."
 
 ;;;###autoload
 (defun ack-and-a-half (pattern &optional regexp directory)
-  "Run ack.
-PATTERN is interpreted as a regular expression, iff REGEXP is
-non-nil.  If called interactively, the value of REGEXP is
-determined by `ack-and-a-half-regexp-search'.  A prefix arg
-toggles the behavior.  DIRECTORY is the root directory.  If
-called interactively, it is determined by
-`ack-and-a-half-project-root-file-patterns'.  The user is only
-prompted, if `ack-and-a-half-prompt-for-directory' is set."
+  "Run ack to search for PATTERN.
+
+PATTERN is interpreted as a regular expression, iff REGEXP is non-nil.
+If called interactively, the value of REGEXP is determined by
+`ack-and-a-half-regexp-search'.  A prefix argument toggles the behavior.
+DIRECTORY is the root directory.  If called interactively, it is
+determined by `ack-and-a-half-project-root-file-patterns'.  The user is
+only prompted if `ack-and-a-half-prompt-for-directory' is set."
   (interactive (ack-and-a-half-interactive))
   (ack-and-a-half-run directory regexp pattern))
 
 (defun ack-and-a-half-with-args (pattern &optional regexp directory)
-  "Run ack with custom arguments.
+  "Run ack with custom arguments to search for PATTERN.
 
 PATTERN, REGEXP, and DIRECTORY are interpreted the same way as in
 the `ack-and-a-half' function."
@@ -470,17 +475,18 @@ the `ack-and-a-half' function."
 ;;;###autoload
 (defun ack-and-a-half-same (pattern &optional regexp directory)
   "Run ack with --type matching the current `major-mode'.
+
 The types of files searched are determined by
 `ack-and-a-half-mode-type-alist' and
-`ack-and-a-half-mode-extension-alist'.  If no type is configured,
-the buffer's file extension is used for the search.  PATTERN is
-interpreted as a regular expression, iff REGEXP is non-nil.  If
-called interactively, the value of REGEXP is determined by
-`ack-and-a-half-regexp-search'.  A prefix arg toggles that value.
-DIRECTORY is the directory in which to start searching.  If
-called interactively, it is determined by
-`ack-and-a-half-project-root-file-patterns`.  The user is only
-prompted, if `ack-and-a-half-prompt-for-directory' is set.`"
+`ack-and-a-half-mode-extension-alist'.  If no type is configured, the
+buffer's file extension is used for the search.  PATTERN is interpreted
+as a regular expression, iff REGEXP is non-nil.  If called
+interactively, the value of REGEXP is determined by
+`ack-and-a-half-regexp-search'.  A prefix argument toggles that value.
+DIRECTORY is the directory in which to start searching.  If called
+interactively, it is determined by
+`ack-and-a-half-project-root-file-patterns`.  The user is only prompted,
+if `ack-and-a-half-prompt-for-directory' is set.`"
   (interactive (ack-and-a-half-interactive))
   (let ((type (ack-and-a-half-type)))
     (if type
@@ -489,7 +495,7 @@ prompted, if `ack-and-a-half-prompt-for-directory' is set.`"
 
 ;;;###autoload
 (defun ack-and-a-half-find-file (&optional directory)
-  "Prompt to find a file found by ack in DIRECTORY."
+  "Prompt the user to open a file found by ack in DIRECTORY.."
   (interactive (list (ack-and-a-half-read-dir)))
   (find-file (expand-file-name
               (ack-and-a-half-read-file
@@ -499,7 +505,9 @@ prompted, if `ack-and-a-half-prompt-for-directory' is set.`"
 
 ;;;###autoload
 (defun ack-and-a-half-find-file-same (&optional directory)
-  "Prompt to find a file found by ack in DIRECTORY."
+  "Prompt the user to open a file found by ack in DIRECTORY.
+
+The file list is filtered by ack to match the type of the current buffer."
   (interactive (list (ack-and-a-half-read-dir)))
   (find-file (expand-file-name
               (ack-and-a-half-read-file
