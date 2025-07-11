@@ -1,0 +1,100 @@
+The Tempest
+by William Shakespeare
+Edited by Barbara A. Mowat and Paul Werstine
+  with Michael Poston and Rebecca Niles
+Folger Shakespeare Library
+https://shakespeare.folger.edu/shakespeares-works/the-tempest/
+Created on Jul 31, 2015, from FDT version 0.9.2
+
+Characters in the Play
+======================
+PROSPERO, the former duke of Milan, now a magician on a Mediterranean island
+MIRANDA, Prospero's daughter
+ARIEL, a spirit, servant to Prospero
+CALIBAN, an inhabitant of the island, servant to Prospero
+FERDINAND, prince of Naples
+ALONSO, king of Naples
+ANTONIO, duke of Milan and Prospero's brother
+SEBASTIAN, Alonso's brother
+GONZALO, councillor to Alonso and friend to Prospero
+Courtiers in attendance on Alonso:
+  ADRIAN
+  FRANCISCO
+TRINCULO, servant to Alonso
+STEPHANO, Alonso's butler
+SHIPMASTER
+BOATSWAIN
+MARINERS
+Players who, as spirits, take the roles of Iris, Ceres, Juno, Nymphs, and Reapers in Prospero's masque, and who, in other scenes, take the roles of "islanders" and of hunting dogs
+
+
+ACT 1
+=====
+
+Scene 1
+=======
+[A tempestuous noise of thunder and lightning heard.
+Enter a Shipmaster and a Boatswain.]
+
+
+MASTER  Boatswain!
+
+BOATSWAIN  Here, master. What cheer?
+
+MASTER  Good, speak to th' mariners. Fall to 't yarely,
+or we run ourselves aground. Bestir, bestir!
+[He exits.]
+
+[Enter Mariners.]
+
+
+BOATSWAIN  Heigh, my hearts! Cheerly, cheerly, my
+hearts! Yare, yare! Take in the topsail. Tend to th'
+Master's whistle.--Blow till thou burst thy wind, if
+room enough!
+
+[Enter Alonso, Sebastian, Antonio, Ferdinand, Gonzalo,
+and others.]
+
+
+ALONSO  Good boatswain, have care. Where's the Master?
+Play the men.
+
+BOATSWAIN  I pray now, keep below.
+
+ANTONIO  Where is the Master, boatswain?
+
+BOATSWAIN  Do you not hear him? You mar our labor.
+Keep your cabins. You do assist the storm.
+
+GONZALO  Nay, good, be patient.
+
+BOATSWAIN  When the sea is. Hence! What cares these
+roarers for the name of king? To cabin! Silence!
+Trouble us not.
+
+GONZALO  Good, yet remember whom thou hast
+aboard.
+
+BOATSWAIN  None that I more love than myself. You are
+a councillor; if you can command these elements
+to silence, and work the peace of the present, we
+will not hand a rope more. Use your authority. If
+you cannot, give thanks you have lived so long, and
+make yourself ready in your cabin for the mischance
+of the hour, if it so hap.--Cheerly, good
+hearts!--Out of our way, I say!	[He exits.]
+
+GONZALO  I have great comfort from this fellow. Methinks
+he hath no drowning mark upon him. His
+complexion is perfect gallows. Stand fast, good
+Fate, to his hanging. Make the rope of his destiny
+our cable, for our own doth little advantage. If he be
+not born to be hanged, our case is miserable.
+[He exits with Alonso, Sebastian,
+and the other courtiers.]
+
+[Enter Boatswain.]
+
+
+BOATSWAIN  Down with the topmast! Yare! Lower, lower!

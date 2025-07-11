@@ -1,0 +1,100 @@
+Henry VI, Part 1
+by William Shakespeare
+Edited by Barbara A. Mowat and Paul Werstine
+  with Michael Poston and Rebecca Niles
+Folger Shakespeare Library
+https://shakespeare.folger.edu/shakespeares-works/henry-vi-part-1/
+Created on Jul 31, 2015, from FDT version 0.9.2
+
+Characters in the Play
+======================
+The English
+KING HENRY VI
+Lord TALBOT, afterwards Earl of Shrewsbury
+JOHN TALBOT, his son
+Duke of GLOUCESTER, the king's uncle, and Lord Protector
+Duke of BEDFORD, the king's uncle, and Regent of France
+Duke of EXETER, the king's great-uncle
+Cardinal, Bishop of WINCHESTER, the king's great-uncle
+Duke of SOMERSET
+Richard PLANTAGENET, later Duke of YORK, and Regent of France
+Earl of WARWICK
+Earl of SALISBURY
+Earl of SUFFOLK, William de la Pole
+Edmund MORTIMER, Earl of March
+Sir William GLANSDALE
+Sir Thomas GARGRAVE
+Sir John FASTOLF
+Sir William LUCY
+WOODVILLE, Lieutenant of the Tower of London
+VERNON, of the White Rose or York faction
+BASSET, of the Red Rose or Lancaster faction
+A LAWYER
+JAILORS to Mortimer
+A LEGATE
+MAYOR of London
+Heralds, Attendants, three Messengers, Servingmen in blue coats and in tawny coats, two Warders, Officers, Soldiers, Captains, Watch, Trumpeters, Drummer, Servant, two Ambassadors
+
+The French
+CHARLES, Dauphin of France
+Joan la PUCELLE, also Joan of Arc
+REIGNIER, Duke of Anjou and Maine, King of Naples
+MARGARET, his daughter
+Duke of ALANSON
+Bastard of ORLEANCE
+Duke of BURGUNDY
+GENERAL of the French forces at Bordeaux
+COUNTESS of Auvergne
+Her PORTER
+MASTER GUNNER of Orleance
+BOY, his son
+SERGEANT of a Band
+A SHEPHERD, Pucelle's father
+Drummer, Soldiers, two Sentinels, Messenger, Soldiers, Governor of Paris, Herald, Scout, Fiends accompanying Pucelle
+
+
+ACT 1
+=====
+
+Scene 1
+=======
+[Dead March. Enter the funeral of King Henry the Fifth,
+attended on by the Duke of Bedford, Regent of France;
+the Duke of Gloucester, Protector; the Duke of Exeter;
+the Earl of Warwick; the Bishop of Winchester; and
+the Duke of Somerset, with Heralds and Attendants.]
+
+
+BEDFORD
+Hung be the heavens with black, yield day to night!
+Comets, importing change of times and states,
+Brandish your crystal tresses in the sky,
+And with them scourge the bad revolting stars
+That have consented unto Henry's death:
+King Henry the Fifth, too famous to live long.
+England ne'er lost a king of so much worth.
+
+GLOUCESTER
+England ne'er had a king until his time.
+Virtue he had, deserving to command;
+His brandished sword did blind men with his beams;
+His arms spread wider than a dragon's wings;
+His sparkling eyes, replete with wrathful fire,
+More dazzled and drove back his enemies
+Than midday sun fierce bent against their faces.
+What should I say? His deeds exceed all speech.
+He ne'er lift up his hand but conquered.
+
+EXETER
+We mourn in black; why mourn we not in blood?
+Henry is dead and never shall revive.
+Upon a wooden coffin we attend,
+And Death's dishonorable victory
+We with our stately presence glorify,
+Like captives bound to a triumphant car.
+What? Shall we curse the planets of mishap
+That plotted thus our glory's overthrow?
+Or shall we think the subtle-witted French
+Conjurers and sorcerers, that, afraid of him,
+By magic verses have contrived his end?
+

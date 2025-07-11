@@ -1,0 +1,100 @@
+Richard II
+by William Shakespeare
+Edited by Barbara A. Mowat and Paul Werstine
+  with Michael Poston and Rebecca Niles
+Folger Shakespeare Library
+https://shakespeare.folger.edu/shakespeares-works/richard-ii/
+Created on Jul 31, 2015, from FDT version 0.9.2
+
+Characters in the Play
+======================
+KING RICHARD II
+Richard's friends:
+  Sir John BUSHY
+  Sir John BAGOT
+  Sir Henry GREEN
+Richard's QUEEN
+Queen's LADIES-IN-WAITING
+JOHN OF GAUNT, Duke of Lancaster
+HENRY BOLINGBROKE, Duke of HEREFORD, son to John of Gaunt, and later King Henry IV
+DUCHESS OF GLOUCESTER, widow to Thomas, Duke of Gloucester
+Edmund, DUKE OF YORK
+DUCHESS OF YORK
+DUKE OF AUMERLE, Earl of Rutland, son to Duke and Duchess of York
+York's SERVINGMEN
+Thomas MOWBRAY, Duke of Norfolk
+Officials in trial by combat:
+  LORD MARSHAL
+  FIRST HERALD
+  SECOND HERALD
+Supporters of King Richard:
+  EARL OF SALISBURY
+  BISHOP OF CARLISLE
+  SIR STEPHEN SCROOP
+  LORD BERKELEY
+  ABBOT OF WESTMINSTER
+  WELSH CAPTAIN
+Supporters of Bolingbroke:
+  Henry Percy, EARL OF NORTHUMBERLAND
+  LORD ROSS
+  LORD WILLOUGHBY
+  HARRY PERCY, son of Northumberland, later known as "Hotspur"
+LORD FITZWATER
+DUKE OF SURREY
+ANOTHER LORD
+GARDENER
+Gardener's Servingmen
+GROOM of Richard's stable
+KEEPER of prison at Pomfret Castle
+SIR PIERCE OF EXTON
+Servingmen to Exton
+Lords, Attendants, Officers, Soldiers, Servingmen, Exton's Men
+
+
+ACT 1
+=====
+
+Scene 1
+=======
+[Enter King Richard, John of Gaunt, with other Nobles
+and Attendants.]
+
+
+KING RICHARD
+Old John of Gaunt, time-honored Lancaster,
+Hast thou, according to thy oath and band,
+Brought hither Henry Hereford, thy bold son,
+Here to make good the boist'rous late appeal,
+Which then our leisure would not let us hear,
+Against the Duke of Norfolk, Thomas Mowbray?
+
+GAUNT  I have, my liege.
+
+KING RICHARD
+Tell me, moreover, hast thou sounded him
+If he appeal the Duke on ancient malice
+Or worthily, as a good subject should,
+On some known ground of treachery in him?
+
+GAUNT
+As near as I could sift him on that argument,
+On some apparent danger seen in him
+Aimed at your Highness, no inveterate malice.
+
+KING RICHARD
+Then call them to our presence.
+[An Attendant exits.]
+Face to face
+And frowning brow to brow, ourselves will hear
+The accuser and the accused freely speak.
+High stomached are they both and full of ire,
+In rage deaf as the sea, hasty as fire.
+
+[Enter Bolingbroke and Mowbray.]
+
+
+BOLINGBROKE
+Many years of happy days befall
+My gracious sovereign, my most loving liege.
+
+MOWBRAY

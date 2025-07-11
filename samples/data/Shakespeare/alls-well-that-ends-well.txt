@@ -1,0 +1,100 @@
+All's Well That Ends Well
+by William Shakespeare
+Edited by Barbara A. Mowat and Paul Werstine
+  with Michael Poston and Rebecca Niles
+Folger Shakespeare Library
+https://shakespeare.folger.edu/shakespeares-works/alls-well-that-ends-well/
+Created on Mar 14, 2018, from FDT version 0.9.2.2
+
+Characters in the Play
+======================
+HELEN, a gentlewoman of Rossillion
+BERTRAM, Count of Rossillion
+COUNTESS of Rossillion, Bertram's mother
+In the Countess's household:
+  STEWARD
+  FOOL
+  PAGE
+PAROLLES, companion to Bertram
+KING of France
+LAFEW, a French lord
+Later Captains in the army of the Duke of Florence:
+  FIRST LORD
+  SECOND LORD
+Other LORDS in the court of the King of France
+From the court of the King of France:
+  FIRST GENTLEMAN
+  SECOND GENTLEMAN
+  GENTLEMAN, a "gentle Astringer"
+FIRST SOLDIER, interpreter
+The DUKE of Florence
+A WIDOW of Florence
+DIANA, the Widow's daughter
+MARIANA, the Widow's neighbor
+Attendants, Soldiers, Citizens of Florence, Servants
+
+
+ACT 1
+=====
+
+Scene 1
+=======
+[Enter young Bertram Count of Rossillion, his mother
+the Countess, and Helen, Lord Lafew, all in black.]
+
+
+COUNTESS  In delivering my son from me, I bury a second
+husband.
+
+BERTRAM  And I in going, madam, weep o'er my
+father's death anew; but I must attend his Majesty's
+command, to whom I am now in ward, evermore
+in subjection.
+
+LAFEW  You shall find of the King a husband, madam;
+you, sir, a father. He that so generally is at all times
+good must of necessity hold his virtue to you,
+whose worthiness would stir it up where it wanted
+rather than lack it where there is such abundance.
+
+COUNTESS  What hope is there of his Majesty's
+amendment?
+
+LAFEW  He hath abandoned his physicians, madam,
+under whose practices he hath persecuted time
+with hope, and finds no other advantage in the
+process but only the losing of hope by time.
+
+COUNTESS  This young gentlewoman had a father--O,
+that "had," how sad a passage 'tis!--whose skill
+was almost as great as his honesty; had it stretched
+so far, would have made nature immortal, and
+death should have play for lack of work. Would for
+the King's sake he were living! I think it would be
+the death of the King's disease.
+
+LAFEW  How called you the man you speak of,
+madam?
+
+COUNTESS  He was famous, sir, in his profession, and it
+was his great right to be so: Gerard de Narbon.
+
+LAFEW  He was excellent indeed, madam. The King
+very lately spoke of him admiringly, and mourningly.
+He was skillful enough to have lived still, if
+knowledge could be set up against mortality.
+
+BERTRAM  What is it, my good lord, the King languishes
+of?
+
+LAFEW  A fistula, my lord.
+
+BERTRAM  I heard not of it before.
+
+LAFEW  I would it were not notorious.--Was this gentlewoman
+the daughter of Gerard de Narbon?
+
+COUNTESS  His sole child, my lord, and bequeathed to
+my overlooking. I have those hopes of her good
+that her education promises. Her dispositions she
+inherits, which makes fair gifts fairer; for where an

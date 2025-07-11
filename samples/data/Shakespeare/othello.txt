@@ -1,0 +1,100 @@
+Othello
+by William Shakespeare
+Edited by Barbara A. Mowat and Paul Werstine
+  with Michael Poston and Rebecca Niles
+Folger Shakespeare Library
+https://shakespeare.folger.edu/shakespeares-works/othello/
+Created on May 11, 2016, from FDT version 0.9.2.1
+
+Characters in the Play
+======================
+OTHELLO, a Moorish general in the Venetian army
+DESDEMONA, a Venetian lady
+BRABANTIO, a Venetian senator, father to Desdemona
+IAGO, Othello's standard-bearer, or "ancient"
+EMILIA, Iago's wife and Desdemona's attendant
+CASSIO, Othello's second-in-command, or lieutenant
+RODERIGO, a Venetian gentleman
+Duke of Venice
+Venetian gentlemen, kinsmen to Brabantio:
+  LODOVICO
+  GRATIANO
+Venetian senators
+MONTANO, an official in Cyprus
+BIANCA, a woman in Cyprus in love with Cassio
+Clown, a comic servant to Othello and Desdemona
+Gentlemen of Cyprus
+Sailors
+Servants, Attendants, Officers, Messengers, Herald, Musicians, Torchbearers.
+
+
+ACT 1
+=====
+
+Scene 1
+=======
+[Enter Roderigo and Iago.]
+
+
+RODERIGO
+Tush, never tell me! I take it much unkindly
+That thou, Iago, who hast had my purse
+As if the strings were thine, shouldst know of this.
+
+IAGO  'Sblood, but you'll not hear me!
+If ever I did dream of such a matter,
+Abhor me.
+
+RODERIGO
+Thou toldst me thou didst hold him in thy hate.
+
+IAGO  Despise me
+If I do not. Three great ones of the city,
+In personal suit to make me his lieutenant,
+Off-capped to him; and, by the faith of man,
+I know my price, I am worth no worse a place.
+But he, as loving his own pride and purposes,
+Evades them with a bombast circumstance,
+Horribly stuffed with epithets of war,
+And in conclusion,
+Nonsuits my mediators. For "Certes," says he,
+"I have already chose my officer."
+And what was he?
+Forsooth, a great arithmetician,
+One Michael Cassio, a Florentine,
+A fellow almost damned in a fair wife,
+That never set a squadron in the field,
+Nor the division of a battle knows
+More than a spinster--unless the bookish theoric,
+Wherein the toged consuls can propose
+As masterly as he. Mere prattle without practice
+Is all his soldiership. But he, sir, had th' election;
+And I, of whom his eyes had seen the proof
+At Rhodes, at Cyprus, and on other grounds
+Christened and heathen, must be beleed and
+calmed
+By debitor and creditor. This countercaster,
+He, in good time, must his lieutenant be,
+And I, God bless the mark, his Moorship's ancient.
+
+RODERIGO
+By heaven, I rather would have been his hangman.
+
+IAGO
+Why, there's no remedy. 'Tis the curse of service.
+Preferment goes by letter and affection,
+And not by old gradation, where each second
+Stood heir to th' first. Now, sir, be judge yourself
+Whether I in any just term am affined
+To love the Moor.
+
+RODERIGO
+I would not follow him, then.
+
+IAGO  O, sir, content you.
+I follow him to serve my turn upon him.
+We cannot all be masters, nor all masters
+Cannot be truly followed. You shall mark
+Many a duteous and knee-crooking knave
+That, doting on his own obsequious bondage,
+Wears out his time, much like his master's ass,

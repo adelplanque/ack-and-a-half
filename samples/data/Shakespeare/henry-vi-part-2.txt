@@ -1,0 +1,100 @@
+Henry VI, Part 2
+by William Shakespeare
+Edited by Barbara A. Mowat and Paul Werstine
+  with Michael Poston and Rebecca Niles
+Folger Shakespeare Library
+https://shakespeare.folger.edu/shakespeares-works/henry-vi-part-2/
+Created on Jul 31, 2015, from FDT version 0.9.2
+
+Characters in the Play
+======================
+KING HENRY VI
+QUEEN MARGARET
+Humphrey, Duke of GLOUCESTER, the king's uncle, and Lord Protector
+DUCHESS of Gloucester, Dame Eleanor Cobham
+CARDINAL Beaufort, Bishop of Winchester, the king's great-uncle
+Duke of SOMERSET
+Duke of SUFFOLK, William de la Pole, earlier Marquess of Suffolk
+BUCKINGHAM
+Lord CLIFFORD
+YOUNG CLIFFORD, his son
+Duke of YORK, Richard Plantagenet
+Earl of SALISBURY
+Earl of WARWICK, Salisbury's son
+Sons of the Duke of York:
+  EDWARD, Earl of March
+  RICHARD
+Jack CADE, leader of the Kentish rebellion
+Followers of Jack Cade:
+  BEVIS
+  John HOLLAND
+  DICK the butcher
+  SMITH the weaver
+  MICHAEL
+  GEORGE
+King Henry's supporters against Cade:
+  Lord SCALES
+  Lord SAYE
+  Sir Humphrey STAFFORD
+  His BROTHER, William Stafford
+Sir John HUME, a priest
+John SOUTHWELL, a priest
+Margery JOURDAIN, a witch
+Roger BOLINGBROKE, a conjurer
+SPIRIT
+Custodians of the Duchess of Gloucester:
+  Sir John STANLEY
+  SHERIFF
+Thomas HORNER, the Duke of York's armorer
+Peter THUMP, Horner the armorer's man or prentice
+Two or Three PETITIONERS
+Three NEIGHBORS of Horner's
+Three PRENTICES, friends of Thump
+A MAN of Saint Albans
+Sander SIMPCOX, supposed recipient of a miracle
+His WIFE
+MAYOR of Saint Albans
+A BEADLE of Saint Albans
+LIEUTENANT, captain of a ship
+Ship's MASTER
+Master's MATE
+Walter WHITMORE, a ship's officer
+Two GENTLEMEN, prisoners
+MESSENGERS
+SERVANTS
+A HERALD
+POST, or messenger
+Two or Three MURDERERS of Gloucester
+VAUX
+CLERK of Chartham
+Two or Three CITIZENS
+Alexander IDEN, a gentleman of Kent
+Servants, Guards, Falconers, Attendants, Townsmen of Saint Albans, Bearers, Drummers, Commoners, Rebels, a Sawyer, Soldiers, Officers, Matthew Gough, and Others
+
+
+ACT 1
+=====
+
+Scene 1
+=======
+[Flourish of trumpets, then hautboys.
+Enter King Henry, Duke Humphrey of Gloucester,
+Salisbury, Warwick, and Cardinal Beaufort, on the one
+side; Queen Margaret, Suffolk, York, Somerset, and
+Buckingham, on the other.]
+
+
+SUFFOLK
+As by your high imperial Majesty
+I had in charge at my depart for France,
+As procurator to your Excellence,
+To marry Princess Margaret for your Grace,
+So, in the famous ancient city Tours,
+In presence of the Kings of France and Sicil,
+The Dukes of Orleance, Calaber, Britaigne, and
+Alanson,
+Seven earls, twelve barons, and twenty reverend
+bishops,
+I have performed my task and was espoused;
+[He kneels.]
+And humbly now upon my bended knee,

@@ -1,0 +1,100 @@
+Hamlet
+by William Shakespeare
+Edited by Barbara A. Mowat and Paul Werstine
+  with Michael Poston and Rebecca Niles
+Folger Shakespeare Library
+https://shakespeare.folger.edu/shakespeares-works/hamlet/
+Created on Jul 31, 2015, from FDT version 0.9.2
+
+Characters in the Play
+======================
+THE GHOST
+HAMLET, Prince of Denmark, son of the late King Hamlet and Queen Gertrude
+QUEEN GERTRUDE, widow of King Hamlet, now married to Claudius
+KING CLAUDIUS, brother to the late King Hamlet
+OPHELIA
+LAERTES, her brother
+POLONIUS, father of Ophelia and Laertes, councillor to King Claudius
+REYNALDO, servant to Polonius
+HORATIO, Hamlet's friend and confidant
+Courtiers at the Danish court:
+  VOLTEMAND
+  CORNELIUS
+  ROSENCRANTZ
+  GUILDENSTERN
+  OSRIC
+  Gentlemen
+  A Lord
+Danish soldiers:
+  FRANCISCO
+  BARNARDO
+  MARCELLUS
+FORTINBRAS, Prince of Norway
+A Captain in Fortinbras's army
+Ambassadors to Denmark from England
+Players who take the roles of Prologue, Player King, Player Queen, and Lucianus in <title>The Murder of Gonzago</title>
+Two Messengers
+Sailors
+Gravedigger
+Gravedigger's companion
+Doctor of Divinity
+Attendants, Lords, Guards, Musicians, Laertes's Followers, Soldiers, Officers
+
+
+ACT 1
+=====
+
+Scene 1
+=======
+[Enter Barnardo and Francisco, two sentinels.]
+
+
+BARNARDO  Who's there?
+
+FRANCISCO
+Nay, answer me. Stand and unfold yourself.
+
+BARNARDO  Long live the King!
+
+FRANCISCO  Barnardo?
+
+BARNARDO  He.
+
+FRANCISCO
+You come most carefully upon your hour.
+
+BARNARDO
+'Tis now struck twelve. Get thee to bed, Francisco.
+
+FRANCISCO
+For this relief much thanks. 'Tis bitter cold,
+And I am sick at heart.
+
+BARNARDO  Have you had quiet guard?
+
+FRANCISCO  Not a mouse stirring.
+
+BARNARDO  Well, good night.
+If you do meet Horatio and Marcellus,
+The rivals of my watch, bid them make haste.
+
+[Enter Horatio and Marcellus.]
+
+
+FRANCISCO
+I think I hear them.--Stand ho! Who is there?
+
+HORATIO  Friends to this ground.
+
+MARCELLUS  And liegemen to the Dane.
+
+FRANCISCO  Give you good night.
+
+MARCELLUS
+O farewell, honest soldier. Who hath relieved
+you?
+
+FRANCISCO
+Barnardo hath my place. Give you good night.
+[Francisco exits.]
+

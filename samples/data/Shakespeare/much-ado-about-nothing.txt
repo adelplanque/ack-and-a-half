@@ -1,0 +1,100 @@
+Much Ado About Nothing
+by William Shakespeare
+Edited by Barbara A. Mowat and Paul Werstine
+  with Michael Poston and Rebecca Niles
+Folger Shakespeare Library
+https://shakespeare.folger.edu/shakespeares-works/much-ado-about-nothing/
+Created on Jul 31, 2015, from FDT version 0.9.2
+
+Characters in the Play
+======================
+LEONATO, Governor of Messina
+HERO, his daughter
+BEATRICE, his niece
+LEONATO'S BROTHER
+Waiting gentlewomen to Hero:
+  MARGARET
+  URSULA
+DON PEDRO, Prince of Aragon
+COUNT CLAUDIO, a young lord from Florence
+SIGNIOR BENEDICK, a gentleman from Padua
+BALTHASAR
+SIGNIOR ANTONIO
+DON JOHN, Don Pedro's brother
+Don John's followers:
+  BORACHIO
+  CONRADE
+DOGBERRY, Master Constable in Messina
+VERGES, Dogberry's partner
+GEORGE SEACOAL, leader of the Watch
+FIRST WATCHMAN
+SECOND WATCHMAN
+SEXTON
+FRIAR FRANCIS
+MESSENGER to Leonato
+MESSENGER to Don Pedro
+BOY
+Musicians, Lords, Attendants, Son to Leonato's brother
+
+
+ACT 1
+=====
+
+Scene 1
+=======
+[Enter Leonato, Governor of Messina, Hero his daughter,
+and Beatrice his niece, with a Messenger.]
+
+
+LEONATO, [with a letter]  I learn in this letter that Don
+Pedro of Aragon comes this night to Messina.
+
+MESSENGER  He is very near by this. He was not three
+leagues off when I left him.
+
+LEONATO  How many gentlemen have you lost in this
+action?
+
+MESSENGER  But few of any sort, and none of name.
+
+LEONATO  A victory is twice itself when the achiever
+brings home full numbers. I find here that Don
+Pedro hath bestowed much honor on a young
+Florentine called Claudio.
+
+MESSENGER  Much deserved on his part, and equally
+remembered by Don Pedro. He hath borne himself
+beyond the promise of his age, doing in the figure
+of a lamb the feats of a lion. He hath indeed better
+bettered expectation than you must expect of me to
+tell you how.
+
+LEONATO  He hath an uncle here in Messina will be
+very much glad of it.
+
+MESSENGER  I have already delivered him letters, and
+there appears much joy in him, even so much that
+joy could not show itself modest enough without a
+badge of bitterness.
+
+LEONATO  Did he break out into tears?
+
+MESSENGER  In great measure.
+
+LEONATO  A kind overflow of kindness. There are no
+faces truer than those that are so washed. How
+much better is it to weep at joy than to joy at
+weeping!
+
+BEATRICE  I pray you, is Signior Mountanto returned
+from the wars or no?
+
+MESSENGER  I know none of that name, lady. There
+was none such in the army of any sort.
+
+LEONATO  What is he that you ask for, niece?
+
+HERO  My cousin means Signior Benedick of Padua.
+
+MESSENGER  O, he's returned, and as pleasant as ever
+he was.
