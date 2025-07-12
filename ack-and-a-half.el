@@ -530,8 +530,8 @@ Returns the newly created buffer."
                    :key "C-a"
                    :descr "Backend"))
          (regex (ack-and-a-half--option-choices
-                 :choices (if ack-and-a-half-regexp-search "yes" "no")
-                 :state "no"
+                 :choices '("yes" "no")
+                 :state (if ack-and-a-half-regexp-search "yes" "no")
                  :key "C-r"
                  :descr "Regex"))
          (same (ack-and-a-half--option-choices
