@@ -466,8 +466,11 @@ Set up `compilation-exit-message-function'."
          (minibuffer-setup-hook
           (append minibuffer-setup-hook
                   (list (lambda () (setq-local enable-recursive-minibuffers nil)))))
-         (new-dir (ido-read-directory-name (format "%s: " (oref opt descr))
-                                       (oref opt state))))
+         (new-dir (if (and (boundp 'ido-mode) ido-mode)
+                      (ido-read-directory-name (format "%s: " (oref opt descr))
+                                               (oref opt state))
+                    (read-directory-name (format "%s: " (oref opt descr))
+                                         (oref opt state)))))
     (oset opt state new-dir)))
 
 (cl-defmethod ack-and-a-half--option-hit ((opt ack-and-a-half--option-text))
