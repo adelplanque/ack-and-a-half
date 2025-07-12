@@ -1,0 +1,37 @@
+name: Run Emacs lisp tests
+
+on:
+  workflow_call:
+    inputs:
+      emacs_version:
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: silex/emacs:${{ inputs.emacs_version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ack
+        run: |
+          apt-get update
+          apt-get install -y ack
+
+      - name: Run tests
+        run: |
+          emacs --batch -Q -L . -L third-party -l ert \
+              -l test-ack-and-a-half.el \
+              -f ert-run-tests-batch-and-exit
+
+      # - name: Check coverage threshold
+      #   run: |
+      #     cat coverage.txt
+      #     COVERAGE=$(grep ack-and-a-half coverage.txt \
+      #                    | sed 's/.*Percent \([0-9.]\+\)%.*/\1/g')
+      #     if [ "$COVERAGE" -lt 75 ]; then
+      #         echo "ERROR: 75% test coverage threshold not reached"
+      #         exit 1
+      #     fi

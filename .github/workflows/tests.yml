@@ -1,0 +1,14 @@
+name: Tests
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test-emacs:
+    strategy:
+      matrix:
+        emacs_version: [24.3, 26, 28, 30]
+    uses: ./.github/workflows/tests-emacs.yml
+    with:
+      emacs_version: ${{ matrix.emacs_version }}
