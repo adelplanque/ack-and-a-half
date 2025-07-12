@@ -391,7 +391,7 @@ When REGEXP is nil, use literal search."
                       (list "--" (shell-quote-argument pattern))
                       (when (eq system-type 'windows-nt)
                         (list (concat " < " null-device)))))
-         (buf (compilation-start (string-join cmd " ")
+         (buf (compilation-start (mapconcat #'identity cmd " ")
                                   'ack-and-a-half-mode
                                   (lambda (&rest _) ack-and-a-half-buffer-name))))
     (when (member 'symbol-overlay features)
