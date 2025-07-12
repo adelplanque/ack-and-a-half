@@ -9,7 +9,7 @@
 ;; Maintainer: Alain Delplanque <alaindelplanque@mailoo.org>
 ;; URL: https://github.com/adelplanque/ack-and-a-half
 ;; Version: 1.2.0
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: tools, search, ack
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 ;;
@@ -60,9 +60,10 @@
 ;;; Code:
 
 (require 'compile)
+(require 'eieio)
 (require 'grep)
-(require 'thingatpt)
 (require 'symbol-overlay nil t)
+(require 'thingatpt)
 
 (define-compilation-mode ack-and-a-half-mode "Ack"
   "Major mode for viewing ack search results."
@@ -130,6 +131,12 @@ Giving a prefix argument to `ack-and-a-half' toggles this option."
   :group 'ack-and-a-half
   :type '(choice (const :tag "Literal searching" nil)
                  (const :tag "Regular expression searching" t)))
+
+(defcustom ack-and-a-half-default-same t
+  "Flag to limit search to files of the same type."
+  :group 'ack-and-a-half
+  :type '(choice (const :tag "Search for file of same type" nil)
+                 (const :tag "Search for all files" t)))
 
 (defcustom ack-and-a-half-use-environment t
   "*Use .ackrc and ACK_OPTIONS when searching."
@@ -291,13 +298,9 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
 
 ;;; Commands ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defvar ack-and-a-half-directory-history nil
-  "Directories recently searched with `ack-and-a-half'.")
-(defvar ack-and-a-half-literal-history nil
+(defvar ack-and-a-half--pattern-history nil
   "Strings recently searched for with `ack-and-a-half'.")
-(defvar ack-and-a-half-regexp-history nil
-  "Regular expressions recently searched for with `ack-and-a-half'.")
-(defvar ack-and-a-half-extra-args-history nil
+(defvar ack-and-a-half--extra-args-history nil
   "Extra args recents passed to ack with `ack-and-a-half-with-args'.")
 
 (defun ack-and-a-half-initial-contents-for-read ()
@@ -317,21 +320,13 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
       (and transient-mark-mode mark-active
            (> (region-end) (region-beginning)))))
 
-(defsubst ack-and-a-half-read (regexp)
-  "Read a search pattern from the user, choosing history according to REGEXP."
-  (let* ((default (ack-and-a-half-default-for-read))
-         (type (if regexp "pattern" "literal search"))
-         (prompt  (if default
-                      (format "ack %s (default %s): " type default)
-                    (format "ack %s: " type))))
-    (read-string prompt
-                 (ack-and-a-half-initial-contents-for-read)
-                 (if regexp 'ack-and-a-half-regexp-history 'ack-and-a-half-literal-history)
-                 default)))
+(defun ack-and-a-half--root-directory ()
+  "Determine root projet directory from which search must begin."
+  (run-hook-with-args-until-success 'ack-and-a-half-root-directory-functions))
 
 (defun ack-and-a-half-read-dir ()
   "Prompt the user for a directory to search in."
-  (let ((dir (run-hook-with-args-until-success 'ack-and-a-half-root-directory-functions)))
+  (let ((dir (ack-and-a-half--root-directory)))
     (if ack-and-a-half-prompt-for-directory
         (if (and dir (eq ack-and-a-half-prompt-for-directory 'unless-guessed))
             dir
@@ -341,17 +336,6 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
       (or dir
           (and buffer-file-name (file-name-directory buffer-file-name))
           default-directory))))
-
-(defsubst ack-and-a-half-xor (a b)
-  "Return t if exactly one of the arguments A or B is non-nil."
-  (if a (not b) b))
-
-(defun ack-and-a-half-interactive ()
-  "Return the interactive arguments for `ack-and-a-half' and `ack-and-a-half-same'."
-  (let ((regexp (ack-and-a-half-xor current-prefix-arg ack-and-a-half-regexp-search)))
-    (list (ack-and-a-half-read regexp)
-          regexp
-          (ack-and-a-half-read-dir))))
 
 (defun ack-and-a-half-type ()
   "Return type argument to pass to ack command."
@@ -446,52 +430,170 @@ Set up `compilation-exit-message-function'."
                     (cons msg code)))
            (cons msg code)))))
 
-;;; Public interface ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defclass ack-and-a-half--option ()
+  ((state :initarg :state
+          :initform nil
+          :documentation "Courrent value.")
+   (descr :initarg :descr
+          :initform nil)
+   (key :initarg :key
+        :initform nil))
+  "Search parameter.")
+
+(defclass ack-and-a-half--option-choices (ack-and-a-half--option)
+  ((choices :initarg :choices
+            :initform nil
+            :type list
+            :documentation "List of available cases."))
+  "Multiple choice option.")
+
+(defclass ack-and-a-half--option-dir (ack-and-a-half--option) nil
+  "Directory type option.")
+
+(defclass ack-and-a-half--option-text (ack-and-a-half--option) nil
+  "Free text type option.")
+
+(cl-defmethod ack-and-a-half--option-hit ((opt ack-and-a-half--option-choices))
+  "Manager when the choice option OPT is enabled."
+  (let* ((choices (oref opt choices))
+         (current (oref opt state)))
+    (oset opt state (or (cadr (member current choices))
+                        (car choices)))))
+
+(cl-defmethod ack-and-a-half--option-hit ((opt ack-and-a-half--option-dir))
+  "Manager when the directory option OPT is enabled."
+  (let* ((enable-recursive-minibuffers t)
+         (minibuffer-setup-hook
+          (append minibuffer-setup-hook
+                  (list (lambda () (setq-local enable-recursive-minibuffers nil)))))
+         (new-dir (ido-read-directory-name (format "%s: " (oref opt descr))
+                                       (oref opt state))))
+    (oset opt state new-dir)))
+
+(cl-defmethod ack-and-a-half--option-hit ((opt ack-and-a-half--option-text))
+  "Manager when the text option OPT is enabled."
+  (let* ((enable-recursive-minibuffers t)
+         (minibuffer-setup-hook
+          (append minibuffer-setup-hook
+                  (list (lambda () (setq-local enable-recursive-minibuffers nil)))))
+         (txt (read-from-minibuffer (oref opt descr) nil nil nil
+                                    'ack-and-a-half--extra-args-history
+                                    (oref opt state))))
+    (oset opt state txt)))
+
+(cl-defmethod ack-and-a-half--option-format-choice ((opt ack-and-a-half--option-choices) value)
+  "Format the VALUE according to the OPT choice option.
+
+It will be highlighted when it matches the current value."
+  (if (string= value (oref opt state))
+      (propertize value 'face 'highlight)
+    (propertize value 'face 'shadow)))
+
+(cl-defmethod ack-and-a-half--option-format ((opt ack-and-a-half--option))
+  "Format an option OPT."
+  (format "%s (%s) [%s]" (oref opt descr) (oref opt key) (oref opt state)))
+
+(cl-defmethod ack-and-a-half--option-format ((opt ack-and-a-half--option-choices))
+  "Format a choice option OPT."
+  (format "%s (%s) [%s]" (oref opt descr) (oref opt key)
+          (mapconcat (lambda (v) (ack-and-a-half--option-format-choice opt v))
+                     (oref opt choices)
+                     "|")))
+
+(defun ack-and-a-half--options-display (buf)
+  "Displays the contents of the options buffer BUF."
+  (with-current-buffer buf
+    (erase-buffer)
+    (insert (mapconcat #'ack-and-a-half--option-format ack-and-a-half--options " - "))
+    (goto-char (point-min))))
+
+(defun ack-and-a-half--options-buffer (options)
+  "Builds the option buffer with the OPTIONS list.
+
+The buffer is displayed immediately above the minibuffer.
+Returns the newly created buffer."
+  (let ((buf (get-buffer-create "*Ack options*")))
+    (with-current-buffer buf
+      (setq-local ack-and-a-half--options options))
+    (ack-and-a-half--options-display buf)
+    (display-buffer buf '((display-buffer-at-bottom) (window-height . 2)))
+    buf))
+
+(defun ack-and-a-half--interactive-args ()
+  "Determine the parameters of the ack search in interactive mode."
+  (let* ((backend (ack-and-a-half--option-choices
+                   :choices '("ack" "ripgrep")
+                   :state "ack"
+                   :key "C-a"
+                   :descr "Backend"))
+         (regex (ack-and-a-half--option-choices
+                 :choices (if ack-and-a-half-regexp-search "yes" "no")
+                 :state "no"
+                 :key "C-r"
+                 :descr "Regex"))
+         (same (ack-and-a-half--option-choices
+                :choices '("yes" "no")
+                :state (if ack-and-a-half-default-same "yes" "no")
+                :key "C-t"
+                :descr "Same"))
+         (directory (ack-and-a-half--option-dir
+                     :state (ack-and-a-half--root-directory)
+                     :key "C-d"
+                     :descr "Dir"))
+         (extra-args (ack-and-a-half--option-text
+                      :state ""
+                      :key "C-e"
+                      :descr "Args"))
+         (options (list backend same regex directory extra-args))
+         (buf (ack-and-a-half--options-buffer options))
+         (map (copy-keymap minibuffer-local-map)))
+    (unwind-protect
+        (progn
+          (dolist (opt options)
+            (define-key map (kbd (oref opt key))
+                        (lambda () (interactive)
+                          (ack-and-a-half--option-hit opt)
+                          (ack-and-a-half--options-display buf))))
+          (let* ((default (ack-and-a-half-default-for-read))
+                 (pattern (read-from-minibuffer
+                           (if default (format "Ack (default %s): " default) "Ack: ")
+                           nil map nil 'ack-and-a-half--history default)))
+            (with-current-buffer buf
+              (list (if (string-blank-p pattern) default pattern)
+                    :backend (oref backend state)
+                    :directory (oref directory state)
+                    :extra-args (oref extra-args state)
+                    :regex (oref regex state)
+                    :same (oref same state)))))
+      (when (buffer-live-p buf)
+        (let ((win (get-buffer-window buf)))
+          (when (window-live-p win) (delete-window win)))
+        (kill-buffer buf)))))
 
 ;;;###autoload
-(defun ack-and-a-half (pattern &optional regexp directory)
-  "Run ack to search for PATTERN.
+(defun ack-and-a-half (pattern &rest args)
+  "Main function to search for a PATTERN on a set of files.
 
-PATTERN is interpreted as a regular expression, iff REGEXP is non-nil.
-If called interactively, the value of REGEXP is determined by
-`ack-and-a-half-regexp-search'.  A prefix argument toggles the behavior.
-DIRECTORY is the root directory.  If called interactively, it is
-determined by `ack-and-a-half-project-root-file-patterns'.  The user is
-only prompted if `ack-and-a-half-prompt-for-directory' is set."
-  (interactive (ack-and-a-half-interactive))
-  (ack-and-a-half-run directory regexp pattern))
+The search can be refined according to the ARGS arguments plist.
+`:directory' Directory to search in
+`:same' Search among files of the same type as the current buffer (yes/no)
+`:regex' Literal search (no) or pattern search (yes)
+`:extra-args' Arbitrary arguments to pass to the command (string)
 
-(defun ack-and-a-half-with-args (pattern &optional regexp directory)
-  "Run ack with custom arguments to search for PATTERN.
-
-PATTERN, REGEXP, and DIRECTORY are interpreted the same way as in
-the `ack-and-a-half' function."
-  (interactive (ack-and-a-half-interactive))
-  (let ((args (read-string "extra args: "
-                           nil
-                           'ack-and-a-half-extra-args-history)))
-    (ack-and-a-half-run directory regexp pattern args)))
-
-;;;###autoload
-(defun ack-and-a-half-same (pattern &optional regexp directory)
-  "Run ack with --type matching the current `major-mode'.
-
-The types of files searched are determined by
-`ack-and-a-half-mode-type-alist' and
-`ack-and-a-half-mode-extension-alist'.  If no type is configured, the
-buffer's file extension is used for the search.  PATTERN is interpreted
-as a regular expression, iff REGEXP is non-nil.  If called
-interactively, the value of REGEXP is determined by
-`ack-and-a-half-regexp-search'.  A prefix argument toggles that value.
-DIRECTORY is the directory in which to start searching.  If called
-interactively, it is determined by
-`ack-and-a-half-project-root-file-patterns`.  The user is only prompted,
-if `ack-and-a-half-prompt-for-directory' is set.`"
-  (interactive (ack-and-a-half-interactive))
-  (let ((type (ack-and-a-half-type)))
-    (if type
-        (apply 'ack-and-a-half-run directory regexp pattern type)
-      (ack-and-a-half pattern regexp directory))))
+In interactive mode, the user is prompted for the expression to search for in
+the minibuffer.  The search parameters are displayed just above and can be
+refined using keyboard shortcuts."
+  (interactive (ack-and-a-half--interactive-args))
+  (let ((directory (or (plist-get args :directory) (ack-and-a-half--root-directory)))
+        (regex (or (plist-get args :pattern)
+                   (if ack-and-a-half-regexp-search "yes" "no")))
+        (same (or (plist-get args :pattern)
+                  (if ack-and-a-half-default-same "yes" "no")))
+        (extra-args (or (plist-get args :extra-args) "")))
+    (apply #'ack-and-a-half-run
+           (append (list directory regex pattern)
+                   (split-string-and-unquote extra-args)
+                   (when (string= (plist-get args :same) "yes") (ack-and-a-half-type))))))
 
 ;;;###autoload
 (defun ack-and-a-half-find-file (&optional directory)
@@ -514,8 +616,6 @@ The file list is filtered by ack to match the type of the current buffer."
                "Find file: "
                (apply 'ack-and-a-half-list-files directory (ack-and-a-half-type)))
               directory)))
-
-;;; End ack-and-a-half.el ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide 'ack-and-a-half)
 

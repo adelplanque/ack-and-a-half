@@ -18,8 +18,7 @@
               (:send-report nil))
   (add-hook 'kill-emacs-hook
             (lambda () (let ((undercover--report-file-path "coverage.txt"))
-                         (undercover-text--report))))
-  )
+                         (undercover-text--report)))))
 
 (require 'ack-and-a-half)
 
@@ -30,21 +29,24 @@ The buffer's start and end contain non-reproducible, context-sensitive text
 such as timestamps or system paths.  This function isolates stable content
 between the first and last error lines."
   (with-current-buffer (get-buffer "*Ack-and-a-half*")
-    (compilation-next-error 1 nil (point-min))
-    (let* ((beg (point))
-           (cur beg))
-      (while (condition-case nil
-                 (progn (compilation-next-error 1) t)
-               (error nil)))
-      (forward-line)
-      (buffer-substring-no-properties beg (point)))))
+    (if (condition-case nil
+            (progn (compilation-next-error 1 nil (point-min)) t)
+          (error) nil)
+        (let* ((beg (point))
+               (cur beg))
+          (while (condition-case nil
+                     (progn (compilation-next-error 1) t)
+                   (error nil)))
+          (forward-line)
+          (buffer-substring-no-properties beg (point)))
+      "")))
 
 (ert-deftest test-ack-and-a-half ()
   "Test that `ack-and-a-half' finds the correct results for literal search."
   (let ((data-dir (expand-file-name "samples/data"))
         (expected-file (expand-file-name "samples/expected.txt")))
 
-    (ack-and-a-half "yourself" nil data-dir)
+    (ack-and-a-half "yourself" :directory data-dir)
     (while (get-buffer-process (get-buffer "*Ack-and-a-half*"))
       (sit-for 0.1))
 
@@ -55,7 +57,7 @@ between the first and last error lines."
       (ert-info ((format "Actual content:\n%s\nExpected content:\n%s"
                          actual-content expected-content)
                  :prefix "Result: ")
-        (should (string= actual-content expected-content))))))
+                (should (string= actual-content expected-content))))))
 
 (provide 'test-ack-and-a-halt)
 
