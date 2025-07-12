@@ -366,7 +366,7 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
 (defun ack-and-a-half-arguments-from-options (regexp)
   "Build arguments for ack command.
 When REGEXP is nil use literal search"
-  (let ((arguments (list "--nocolor" "--nogroup" "--column"
+  (let ((arguments (list "--sort-files" "--nocolor" "--nogroup" "--column"
                          (ack-and-a-half-option "smart-case" (eq ack-and-a-half-ignore-case 'smart))
                          (ack-and-a-half-option "env" ack-and-a-half-use-environment))))
     (when ack-and-a-half-ignore-dirs
