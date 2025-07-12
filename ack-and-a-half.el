@@ -180,11 +180,6 @@ confirmed.  If t, then always prompt for the directory to use."
                  (const :tag "Don't prompt when guessed" unless-guessed)
                  (const :tag "Always prompt" t)))
 
-(defcustom ack-and-a-half-use-ido nil
-  "Whether or not `ack-and-a-half' should use ido.
-Used to provide completion suggestions when prompting for directory."
-  :type 'boolean)
-
 (defcustom ack-and-a-half-ignore-dirs nil
   "List of directories to be ignored by ack command.
 
@@ -303,39 +298,20 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
 (defvar ack-and-a-half--extra-args-history nil
   "Extra args recents passed to ack with `ack-and-a-half-with-args'.")
 
-(defun ack-and-a-half-initial-contents-for-read ()
-  "Return the initial contents for reading input based on the active region."
-  (when (ack-and-a-half-use-region-p)
-    (buffer-substring-no-properties (region-beginning) (region-end))))
-
-(defun ack-and-a-half-default-for-read ()
-  "Determine the default pattern to search based on the buffer context."
-  (let ((pattern (unless (ack-and-a-half-use-region-p) (thing-at-point 'symbol))))
-    (set-text-properties 0 (length pattern) nil pattern)
-    pattern))
-
-(defun ack-and-a-half-use-region-p ()
-  "Check if a non-empty region is active in the buffer."
-  (or (and (fboundp 'use-region-p) (use-region-p))
-      (and transient-mark-mode mark-active
-           (> (region-end) (region-beginning)))))
+(defun ack-and-a-half--default-pattern ()
+  "Return the initial search pattern.
+Return the active region if it exists, otherwise the symbol at point."
+  (cond
+   ((use-region-p)
+    (buffer-substring-no-properties (region-beginning) (region-end)))
+   ((when-let ((sym (thing-at-point 'symbol)))
+      (set-text-properties 0 (length sym) nil sym)
+      sym))
+   (t "")))
 
 (defun ack-and-a-half--root-directory ()
   "Determine root projet directory from which search must begin."
   (run-hook-with-args-until-success 'ack-and-a-half-root-directory-functions))
-
-(defun ack-and-a-half-read-dir ()
-  "Prompt the user for a directory to search in."
-  (let ((dir (ack-and-a-half--root-directory)))
-    (if ack-and-a-half-prompt-for-directory
-        (if (and dir (eq ack-and-a-half-prompt-for-directory 'unless-guessed))
-            dir
-          (if ack-and-a-half-use-ido
-              (ido-read-directory-name "Directory: " dir dir t)
-            (read-directory-name "Directory: " dir dir t)))
-      (or dir
-          (and buffer-file-name (file-name-directory buffer-file-name))
-          default-directory))))
 
 (defun ack-and-a-half-type ()
   "Return type argument to pass to ack command."
@@ -383,30 +359,6 @@ When REGEXP is nil, use literal search."
         (symbol-overlay-remove-all)
         (setq symbol-overlay-keywords-alist nil)
         (symbol-overlay-put-all pattern nil)))))
-
-(defun ack-and-a-half-read-file (prompt choices)
-  "Prompt user with PROMPT to choose a file from CHOICES."
-  (if ido-mode
-      (ido-completing-read prompt choices nil t)
-    (require 'iswitchb)
-    (with-no-warnings
-      (let ((iswitchb-make-buflist-hook
-             (lambda () (setq iswitchb-temp-buflist choices))))
-        (iswitchb-read-buffer prompt nil t)))))
-
-(defun ack-and-a-half-list-files (directory &rest arguments)
-  "Return a list of files in DIRECTORY using ack command with ARGUMENTS."
-  (with-temp-buffer
-    (let ((default-directory directory))
-      (when (eq 0 (apply 'call-process ack-and-a-half-executable nil t nil "-f" "--print0"
-                         arguments))
-        (goto-char (point-min))
-        (let ((beg (point-min))
-              files)
-          (while (re-search-forward "\0" nil t)
-            (push (buffer-substring beg (match-beginning 0)) files)
-            (setq beg (match-end 0)))
-          files)))))
 
 (defun ack-and-a-half-version-string ()
   "Return the ack version string."
@@ -557,7 +509,7 @@ Returns the newly created buffer."
                         (lambda () (interactive)
                           (ack-and-a-half--option-hit opt)
                           (ack-and-a-half--options-display buf))))
-          (let* ((default (ack-and-a-half-default-for-read))
+          (let* ((default (ack-and-a-half--default-pattern))
                  (pattern (read-from-minibuffer
                            (if default (format "Ack (default %s): " default) "Ack: ")
                            nil map nil 'ack-and-a-half--history default)))
@@ -597,28 +549,6 @@ refined using keyboard shortcuts."
            (append (list directory regex pattern)
                    (split-string-and-unquote extra-args)
                    (when (string= (plist-get args :same) "yes") (ack-and-a-half-type))))))
-
-;;;###autoload
-(defun ack-and-a-half-find-file (&optional directory)
-  "Prompt the user to open a file found by ack in DIRECTORY.."
-  (interactive (list (ack-and-a-half-read-dir)))
-  (find-file (expand-file-name
-              (ack-and-a-half-read-file
-               "Find file: "
-               (ack-and-a-half-list-files directory))
-              directory)))
-
-;;;###autoload
-(defun ack-and-a-half-find-file-same (&optional directory)
-  "Prompt the user to open a file found by ack in DIRECTORY.
-
-The file list is filtered by ack to match the type of the current buffer."
-  (interactive (list (ack-and-a-half-read-dir)))
-  (find-file (expand-file-name
-              (ack-and-a-half-read-file
-               "Find file: "
-               (apply 'ack-and-a-half-list-files directory (ack-and-a-half-type)))
-              directory)))
 
 (provide 'ack-and-a-half)
 
