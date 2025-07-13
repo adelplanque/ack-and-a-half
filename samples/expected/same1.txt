@@ -1,0 +1,9 @@
+Shakespeare/lucrece.txt:1:1:Lucrece
+Shakespeare/lucrece.txt:47:50:that time Sextus Tarquinius, being inflamed with Lucrece' beauty,
+Shakespeare/lucrece.txt:51:11:lodged by Lucrece at Collatium. The same night he treacherously
+Shakespeare/lucrece.txt:53:24:morning speedeth away. Lucrece, in this lamentable plight, hastily
+Shakespeare/lucrece.txt:56:55:Brutus, the other with Publius Valerius--and, finding Lucrece attired
+Shakespeare/lucrece.txt:70:1:Lucrece
+Shakespeare/lucrece.txt:79:29:  Of Collatine's fair love, Lucrece the chaste.
+python/example.py:1:10:print("""Lucrece
+python/example.py:10:29:  Of Collatine's fair love, Lucrece the chaste.

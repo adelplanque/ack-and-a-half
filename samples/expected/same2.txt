@@ -1,0 +1,2 @@
+python/example.py:1:10:print("""Lucrece
+python/example.py:10:29:  Of Collatine's fair love, Lucrece the chaste.

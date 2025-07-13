@@ -1,0 +1,4 @@
+Shakespeare/hamlet.txt:55:34:Nay, answer me. Stand and unfold yourself.
+Shakespeare/othello.txt:87:45:Stood heir to th' first. Now, sir, be judge yourself
+Shakespeare/the-merry-wives-of-windsor.txt:87:37:coat, there is but three skirts for yourself, in my
+Shakespeare/the-tempest.txt:84:6:make yourself ready in your cabin for the mischance

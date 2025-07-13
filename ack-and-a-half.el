@@ -540,7 +540,7 @@ The search can be refined according to the ARGS arguments plist.
 `:directory' Directory to search in
 `:ignore-dirs' List of directories to be ignored
 `:extra-args' Arbitrary arguments to pass to the command (string)
-`:regex' Literal search (nil) or pattern search (t)
+`:regexp' Literal search (nil) or pattern search (t)
 `:same' Search among files of the same type as the current buffer (t/nil)
 
 In interactive mode, the user is prompted for the expression to search for in
@@ -548,16 +548,18 @@ the minibuffer.  The search parameters are displayed just above and can be
 refined using keyboard shortcuts."
   (interactive (ack-and-a-half--interactive-args))
   (let ((directory (or (plist-get args :directory) (ack-and-a-half--root-directory)))
-        (regex (if (plist-member args :regexp)
-                   (plist-get args :regexp)
-                 ack-and-a-half-regexp-search))
+        (regexp (if (plist-member args :regexp)
+                    (plist-get args :regexp)
+                  ack-and-a-half-regexp-search))
         (same (if (plist-member args :same)
                   (plist-get args :same)
                 ack-and-a-half-default-same))
         (extra-args (or (plist-get args :extra-args) ""))
-        (ack-and-a-half-ignore-dirs (plist-get args :ignore-dirs)))
+        (ack-and-a-half-ignore-dirs (if (plist-member args :ignore-dirs)
+                                        (plist-get args :ignore-dirs)
+                                      ack-and-a-half-ignore-dirs)))
     (apply #'ack-and-a-half-run
-           (append (list directory regex pattern)
+           (append (list directory regexp pattern)
                    (split-string-and-unquote extra-args)
                    (when same (ack-and-a-half-type))))))
 
