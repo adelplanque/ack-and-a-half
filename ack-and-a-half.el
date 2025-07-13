@@ -431,7 +431,7 @@ Set up `compilation-exit-message-function'."
          (minibuffer-setup-hook
           (append minibuffer-setup-hook
                   (list (lambda () (setq-local enable-recursive-minibuffers nil)))))
-         (txt (read-from-minibuffer (oref opt descr) nil nil nil
+         (txt (read-from-minibuffer (format "%s: " (oref opt descr)) nil nil nil
                                     'ack-and-a-half--extra-args-history
                                     (oref opt state))))
     (oset opt state txt)))
@@ -495,11 +495,15 @@ Returns the newly created buffer."
                      :state (ack-and-a-half--root-directory)
                      :key "C-d"
                      :descr "Dir"))
+         (ignore-dirs (ack-and-a-half--option-text
+                       :state (mapconcat #'identity ack-and-a-half-ignore-dirs ":")
+                       :key "C-i"
+                       :descr "Ignore"))
          (extra-args (ack-and-a-half--option-text
                       :state ""
                       :key "C-e"
                       :descr "Args"))
-         (options (list backend same regex directory extra-args))
+         (options (list backend same regex directory ignore-dirs extra-args))
          (buf (ack-and-a-half--options-buffer options))
          (map (copy-keymap minibuffer-local-map)))
     (unwind-protect
@@ -518,6 +522,7 @@ Returns the newly created buffer."
                     :backend (oref backend state)
                     :directory (oref directory state)
                     :extra-args (oref extra-args state)
+                    :ignore-dirs (split-string (oref ignore-dirs state) ":")
                     :regex (oref regex state)
                     :same (oref same state)))))
       (when (buffer-live-p buf)
@@ -531,9 +536,10 @@ Returns the newly created buffer."
 
 The search can be refined according to the ARGS arguments plist.
 `:directory' Directory to search in
-`:same' Search among files of the same type as the current buffer (yes/no)
-`:regex' Literal search (no) or pattern search (yes)
+`:ignore-dirs' List of directories to be ignored
 `:extra-args' Arbitrary arguments to pass to the command (string)
+`:regex' Literal search (no) or pattern search (yes)
+`:same' Search among files of the same type as the current buffer (yes/no)
 
 In interactive mode, the user is prompted for the expression to search for in
 the minibuffer.  The search parameters are displayed just above and can be
@@ -544,7 +550,8 @@ refined using keyboard shortcuts."
                    (if ack-and-a-half-regexp-search "yes" "no")))
         (same (or (plist-get args :pattern)
                   (if ack-and-a-half-default-same "yes" "no")))
-        (extra-args (or (plist-get args :extra-args) "")))
+        (extra-args (or (plist-get args :extra-args) ""))
+        (ack-and-a-half-ignore-dirs (plist-get args :ignore-dirs)))
     (apply #'ack-and-a-half-run
            (append (list directory regex pattern)
                    (split-string-and-unquote extra-args)
