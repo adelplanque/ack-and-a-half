@@ -481,11 +481,11 @@ Returns the newly created buffer."
                    :state "ack"
                    :key "C-a"
                    :descr "Backend"))
-         (regex (ack-and-a-half--option-choices
-                 :choices '("yes" "no")
-                 :state (if ack-and-a-half-regexp-search "yes" "no")
-                 :key "C-r"
-                 :descr "Regex"))
+         (regexp (ack-and-a-half--option-choices
+                  :choices '("yes" "no")
+                  :state (if ack-and-a-half-regexp-search "yes" "no")
+                  :key "C-r"
+                  :descr "Regex"))
          (same (ack-and-a-half--option-choices
                 :choices '("yes" "no")
                 :state (if ack-and-a-half-default-same "yes" "no")
@@ -503,7 +503,7 @@ Returns the newly created buffer."
                       :state ""
                       :key "C-e"
                       :descr "Args"))
-         (options (list backend same regex directory ignore-dirs extra-args))
+         (options (list backend same regexp directory ignore-dirs extra-args))
          (buf (ack-and-a-half--options-buffer options))
          (map (copy-keymap minibuffer-local-map)))
     (unwind-protect
@@ -522,9 +522,10 @@ Returns the newly created buffer."
                     :backend (oref backend state)
                     :directory (oref directory state)
                     :extra-args (oref extra-args state)
-                    :ignore-dirs (split-string (oref ignore-dirs state) ":")
-                    :regex (oref regex state)
-                    :same (oref same state)))))
+                    :ignore-dirs (let ((dirs (oref ignore-dirs state)))
+                                   (when (not (string= dirs "")) (split-string dirs ":")))
+                    :regexp (if (string= (oref regexp state) "yes") t nil)
+                    :same (if (string= (oref same state) "yes") t nil)))))
       (when (buffer-live-p buf)
         (let ((win (get-buffer-window buf)))
           (when (window-live-p win) (delete-window win)))
@@ -538,24 +539,26 @@ The search can be refined according to the ARGS arguments plist.
 `:directory' Directory to search in
 `:ignore-dirs' List of directories to be ignored
 `:extra-args' Arbitrary arguments to pass to the command (string)
-`:regex' Literal search (no) or pattern search (yes)
-`:same' Search among files of the same type as the current buffer (yes/no)
+`:regex' Literal search (nil) or pattern search (t)
+`:same' Search among files of the same type as the current buffer (t/nil)
 
 In interactive mode, the user is prompted for the expression to search for in
 the minibuffer.  The search parameters are displayed just above and can be
 refined using keyboard shortcuts."
   (interactive (ack-and-a-half--interactive-args))
   (let ((directory (or (plist-get args :directory) (ack-and-a-half--root-directory)))
-        (regex (or (plist-get args :pattern)
-                   (if ack-and-a-half-regexp-search "yes" "no")))
-        (same (or (plist-get args :pattern)
-                  (if ack-and-a-half-default-same "yes" "no")))
+        (regex (if (plist-member args :regexp)
+                   (plist-get args :regexp)
+                 ack-and-a-half-regexp-search))
+        (same (if (plist-member args :same)
+                  (plist-get args :same)
+                ack-and-a-half-default-same))
         (extra-args (or (plist-get args :extra-args) ""))
         (ack-and-a-half-ignore-dirs (plist-get args :ignore-dirs)))
     (apply #'ack-and-a-half-run
            (append (list directory regex pattern)
                    (split-string-and-unquote extra-args)
-                   (when (string= (plist-get args :same) "yes") (ack-and-a-half-type))))))
+                   (when same (ack-and-a-half-type))))))
 
 (provide 'ack-and-a-half)
 
