@@ -323,42 +323,68 @@ Return the active region if it exists, otherwise the symbol at point."
   "Format cli flag --name/--noname according to NAME and boolean ENABLED."
   (format "--%s%s" (if enabled "" "no") name))
 
-(defun ack-and-a-half-arguments-from-options (regexp)
-  "Build arguments for ack command.
-When REGEXP is nil use literal search"
-  (let ((arguments (list "--sort-files" "--nocolor" "--nogroup" "--column"
-                         (ack-and-a-half-option "smart-case" (eq ack-and-a-half-ignore-case 'smart))
-                         (ack-and-a-half-option "env" ack-and-a-half-use-environment))))
-    (when ack-and-a-half-ignore-dirs
-      (dolist (item ack-and-a-half-ignore-dirs)
-        (setq arguments (append arguments `("--ignore-dir" ,(shell-quote-argument item))))))
-    (unless ack-and-a-half-ignore-case
-      (push "-i" arguments))
-    (unless regexp
-      (push "--literal" arguments))
-    arguments))
+(defclass ack-and-a-half--backend ()
+  ((name :initarg :name
+         :initform nil
+         :documentation "Backend name.")))
 
-(defun ack-and-a-half-run (directory regexp pattern &rest arguments)
-  "Run ack to search PATTERN in DIRECTORY with ARGUMENTS.
-When REGEXP is nil, use literal search."
-  (let* ((default-directory (if directory
-                                (file-name-as-directory (expand-file-name directory))
-                              default-directory))
-         (cmd (append (list ack-and-a-half-executable)
-                      ack-and-a-half-arguments
-                      (ack-and-a-half-arguments-from-options regexp)
-                      arguments
-                      (list "--" (shell-quote-argument pattern))
-                      (when (eq system-type 'windows-nt)
-                        (list (concat " < " null-device)))))
+(defun ack-and-a-half--setup-args (args)
+  "Fill missing argument in ARGS plist and return a new one."
+  (list :directory (or (plist-get args :directory) (ack-and-a-half--root-directory))
+        :regexp (if (plist-member args :regexp)
+                    (plist-get args :regexp)
+                  ack-and-a-half-regexp-search)
+        :same (if (plist-member args :same)
+                  (plist-get args :same)
+                ack-and-a-half-default-same)
+        :extra-args (or (plist-get args :extra-args) "")
+        :ignore-dirs (or (plist-get args :ignore-dirs)
+                         ack-and-a-half-ignore-dirs)))
+
+(cl-defmethod ack-and-a-half--backend-run ((backend ack-and-a-half--backend)
+                                           pattern args)
+  "Run BACKEND command to search PATTERN with ARGS."
+  (let* ((args (ack-and-a-half--setup-args args))
+         (cmd (ack-and-a-half--backend-get-cmd backend pattern args))
+         (default-directory (plist-get args :directory))
          (buf (compilation-start (mapconcat #'identity cmd " ")
-                                  'ack-and-a-half-mode
-                                  (lambda (&rest _) ack-and-a-half-buffer-name))))
+                                 'ack-and-a-half-mode
+                                 (lambda (&rest _) ack-and-a-half-buffer-name))))
     (when (member 'symbol-overlay features)
       (with-current-buffer buf
         (symbol-overlay-remove-all)
         (setq symbol-overlay-keywords-alist nil)
         (symbol-overlay-put-all pattern nil)))))
+
+(defclass ack-and-a-half--backend-ack (ack-and-a-half--backend) nil)
+
+(cl-defmethod ack-and-a-half--backend-get-cmd ((backend ack-and-a-half--backend-ack)
+                                               pattern args)
+  "Return cli command to search for PATTERN with ARGS using ack BACKEND."
+  (let* ((ack-and-a-half-ignore-dirs (plist-get args :ignore-dirs)))
+    (append (list ack-and-a-half-executable "--sort-files" "--nocolor" "--nogroup" "--column"
+                  (ack-and-a-half-option "smart-case" (eq ack-and-a-half-ignore-case 'smart))
+                  (ack-and-a-half-option "env" ack-and-a-half-use-environment))
+            (when (plist-get args :same) (ack-and-a-half-type))
+            (cl-mapcan (lambda (x) (list "--ignore-dir" x)) (plist-get args :ignore-dirs))
+            (unless ack-and-a-half-ignore-case '("-i"))
+            (unless (plist-get args :regexp) '("--literal"))
+            ack-and-a-half-arguments
+            (split-string-and-unquote (plist-get args :extra-args))
+            (list "--" (shell-quote-argument pattern))
+            (when (eq system-type 'windows-nt)
+              (list (concat " < " null-device))))))
+
+(defclass ack-and-a-half--backend-ripgrep (ack-and-a-half--backend) nil)
+
+(cl-defmethod ack-and-a-half--backend-get-cmd ((backend ack-and-a-half--backend-ripgrep)
+                                               pattern args)
+  "Return cli command to search for PATTERN with ARGS using ripgrep BACKEND."
+  (error "Not yet implemented"))
+
+(defvar ack-and-a-half--backends
+  (list (ack-and-a-half--backend-ack :name "ack")
+        (ack-and-a-half--backend-ripgrep :name "ripgrep")))
 
 (defun ack-and-a-half-version-string ()
   "Return the ack version string."
@@ -547,21 +573,12 @@ In interactive mode, the user is prompted for the expression to search for in
 the minibuffer.  The search parameters are displayed just above and can be
 refined using keyboard shortcuts."
   (interactive (ack-and-a-half--interactive-args))
-  (let ((directory (or (plist-get args :directory) (ack-and-a-half--root-directory)))
-        (regexp (if (plist-member args :regexp)
-                    (plist-get args :regexp)
-                  ack-and-a-half-regexp-search))
-        (same (if (plist-member args :same)
-                  (plist-get args :same)
-                ack-and-a-half-default-same))
-        (extra-args (or (plist-get args :extra-args) ""))
-        (ack-and-a-half-ignore-dirs (if (plist-member args :ignore-dirs)
-                                        (plist-get args :ignore-dirs)
-                                      ack-and-a-half-ignore-dirs)))
-    (apply #'ack-and-a-half-run
-           (append (list directory regexp pattern)
-                   (split-string-and-unquote extra-args)
-                   (when same (ack-and-a-half-type))))))
+  (let* ((backend-name (or (plist-get args :backend)
+                           (oref (car ack-and-a-half--backends) name)))
+         (backend (seq-find (lambda (backend)
+                              (equal (oref backend name) backend-name))
+                            ack-and-a-half--backends)))
+    (ack-and-a-half--backend-run backend pattern args)))
 
 (provide 'ack-and-a-half)
 

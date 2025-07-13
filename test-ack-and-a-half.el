@@ -79,29 +79,29 @@ Keyword OPTIONS:
 (test-ack-and-a-half--define-test
  regexp1 "yours?elf" "samples/expected/regexp1.txt"
  :doc "Explicit regexp search"
- :args '(:regexp t))
+ :args (list :regexp t))
 
 (test-ack-and-a-half--define-test
  regexp2 "yours?elf" "samples/expected/regexp2.txt"
  :doc "Explicit litteral search"
- :args '(:regexp nil))
+ :args (list :regexp nil))
 
 (test-ack-and-a-half--define-test
  same1 "Lucrece" "samples/expected/same1.txt"
  :doc "Explicit all files search"
- :args '(:same nil))
+ :args (list :same nil))
 
 (test-ack-and-a-half--define-test
  same2 "Lucrece" "samples/expected/same2.txt"
  :doc "Explicit same files search"
- :args '(:same t)
+ :args (list :same t)
  :bindings ((major-mode 'python-mode)))
 
 (test-ack-and-a-half--define-test
  ignore-dirs1 "Lucrece" "samples/expected/ignore-dirs1.txt"
  :doc "Explicit same files search"
- :args '(:same nil
-         :ignore-dirs ("Shakespeare")))
+ :args (list :same nil
+             :ignore-dirs '("Shakespeare")))
 
 (test-ack-and-a-half--define-test
  ignore-dirs2 "Lucrece" "samples/expected/ignore-dirs2.txt"
