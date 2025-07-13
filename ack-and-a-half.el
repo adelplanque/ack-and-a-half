@@ -459,7 +459,8 @@ It will be highlighted when it matches the current value."
   "Displays the contents of the options buffer BUF."
   (with-current-buffer buf
     (erase-buffer)
-    (insert (mapconcat #'ack-and-a-half--option-format ack-and-a-half--options " - "))
+    (when (boundp 'ack-and-a-half--options)
+      (insert (mapconcat #'ack-and-a-half--option-format ack-and-a-half--options " - ")))
     (goto-char (point-min))))
 
 (defun ack-and-a-half--options-buffer (options)
