@@ -80,9 +80,15 @@
   :group 'tools
   :group 'matching)
 
-(defcustom ack-and-a-half-executable (or (executable-find "ack")
-                                         (executable-find "ack-grep"))
+(defcustom ack-and-a-half-executable-ack (or (executable-find "ack")
+                                             (executable-find "ack-grep"))
   "*The location of the ack executable."
+  :group 'ack-and-a-half
+  :type 'file)
+
+(defcustom ack-and-a-half-executable-ripgrep (or (executable-find "rg")
+                                                 (executable-find "ripgrep"))
+  "*The location of the ripgrep executable."
   :group 'ack-and-a-half
   :type 'file)
 
@@ -98,7 +104,7 @@
 
 (defcustom ack-and-a-half-mode-type-alist nil
   "*File type(s) to search per major mode.  (ack-and-a-half-same)
-This overrides values in `ack-and-a-half-mode-type-default-alist'.
+This overrides values in `ack-and-a-half--mode-type-default-alist'.
 The car in each list element is a major mode, and the rest
 is a list of strings passed to the --type flag of ack when running
 `ack-and-a-half-same'."
@@ -192,7 +198,7 @@ differently depending on the mode."
 
 ;;; Default setting lists ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defconst ack-and-a-half-mode-type-default-alist
+(defconst ack-and-a-half--mode-type-default-alist
   '((actionscript-mode "actionscript")
     (LaTeX-mode "tex")
     (TeX-mode "tex")
@@ -231,7 +237,6 @@ differently depending on the mode."
     (perl-mode "perl")
     (php-mode "php")
     (plone-mode "plone")
-    (python-mode "python")
     (ruby-mode "ruby")
     (scala-mode "scala")
     (scheme-mode "scheme")
@@ -252,29 +257,6 @@ differently depending on the mode."
 (defconst ack-and-a-half-mode-extension-default-alist
   '((d-mode "d"))
   "Default values for `ack-and-a-half-mode-extension-alist'.")
-
-(defun ack-and-a-half-create-type (extensions)
-  "Create ack options to filter files by EXTENSIONS."
-  (list "--type" "customtype" "--type-set"
-        (concat "customtype:ext:" (mapconcat 'identity extensions ","))))
-
-(defun ack-and-a-half-type-for-major-mode (mode)
-  "Return the --type and --type-set arguments to use with ack for major mode MODE."
-  (let ((types (cdr (or (assoc mode ack-and-a-half-mode-type-alist)
-                        (assoc mode ack-and-a-half-mode-type-default-alist))))
-        (ext (cdr (or (assoc mode ack-and-a-half-mode-extension-alist)
-                      (assoc mode ack-and-a-half-mode-extension-default-alist))))
-        result)
-    (dolist (type types)
-      (push type result)
-      (push "--type" result))
-    (if ext
-        (if types
-            `("--type-add" ,(concat (car types)
-                                    "=" (mapconcat 'identity ext ","))
-              . ,result)
-          (ack-and-a-half-create-type ext))
-      result)))
 
 ;;; Project root ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -313,12 +295,6 @@ Return the active region if it exists, otherwise the symbol at point."
   "Determine root projet directory from which search must begin."
   (run-hook-with-args-until-success 'ack-and-a-half-root-directory-functions))
 
-(defun ack-and-a-half-type ()
-  "Return type argument to pass to ack command."
-  (or (ack-and-a-half-type-for-major-mode major-mode)
-      (when buffer-file-name
-        (ack-and-a-half-create-type (list (file-name-extension buffer-file-name))))))
-
 (defun ack-and-a-half-option (name enabled)
   "Format cli flag --name/--noname according to NAME and boolean ENABLED."
   (format "--%s%s" (if enabled "" "no") name))
@@ -326,7 +302,37 @@ Return the active region if it exists, otherwise the symbol at point."
 (defclass ack-and-a-half--backend ()
   ((name :initarg :name
          :initform nil
-         :documentation "Backend name.")))
+         :documentation "Backend name.")
+   (mode-type-alist :initarg :mode-type-alist
+                    :initform nil
+                    :documentation
+                    "major-mode type mapping for --type argument.")))
+
+(defun ack-and-a-half-create-type (extensions)
+  "Create ack options to filter files by EXTENSIONS."
+  (list "--type" "customtype" "--type-set"
+        (concat "customtype:ext:" (mapconcat 'identity extensions ","))))
+
+(cl-defmethod ack-and-a-half--backend-type-args ((backend ack-and-a-half--backend))
+  "Return type-related command-line arguments for BACKEND."
+  (let ((types (cdr (or (assoc major-mode ack-and-a-half-mode-type-alist)
+                        (assoc major-mode (oref backend mode-type-alist)))))
+        (ext (cdr (or (assoc major-mode ack-and-a-half-mode-extension-alist)
+                      (assoc major-mode ack-and-a-half-mode-extension-default-alist))))
+        result)
+    (unless (or types ext)
+      (when buffer-file-name
+        (setq ext (list (file-name-extension buffer-file-name)))))
+    (dolist (type types)
+      (push type result)
+      (push "--type" result))
+    (if ext
+        (if types
+            `("--type-add" ,(concat (car types)
+                                    "=" (mapconcat 'identity ext ","))
+              . ,result)
+          (ack-and-a-half-create-type ext))
+      result)))
 
 (defun ack-and-a-half--setup-args (args)
   "Fill missing argument in ARGS plist and return a new one."
@@ -343,12 +349,12 @@ Return the active region if it exists, otherwise the symbol at point."
 
 (cl-defmethod ack-and-a-half--backend-run ((backend ack-and-a-half--backend)
                                            pattern args)
-  "Run BACKEND command to search PATTERN with ARGS."
+  "Run BACKEND to search for PATTERN according to ARGS."
   (let* ((args (ack-and-a-half--setup-args args))
-         (cmd (ack-and-a-half--backend-get-cmd backend pattern args))
          (default-directory (plist-get args :directory))
-         (buf (compilation-start (mapconcat #'identity cmd " ")
-                                 'ack-and-a-half-mode
+         (cmd-list (ack-and-a-half--backend-get-cmd backend pattern args))
+         (cmd (mapconcat #'shell-quote-argument cmd-list " "))
+         (buf (compilation-start cmd 'ack-and-a-half-mode
                                  (lambda (&rest _) ack-and-a-half-buffer-name))))
     (when (member 'symbol-overlay features)
       (with-current-buffer buf
@@ -356,40 +362,58 @@ Return the active region if it exists, otherwise the symbol at point."
         (setq symbol-overlay-keywords-alist nil)
         (symbol-overlay-put-all pattern nil)))))
 
-(defclass ack-and-a-half--backend-ack (ack-and-a-half--backend) nil)
+(defclass ack-and-a-half--backend-ack (ack-and-a-half--backend)
+  ((mode-type-alist :initarg :mode-type-alist
+                    :initform (append '((python-mode "python"))
+                                      ack-and-a-half--mode-type-default-alist)))
+  "Concrete backend class for ack.")
 
 (cl-defmethod ack-and-a-half--backend-get-cmd ((backend ack-and-a-half--backend-ack)
                                                pattern args)
-  "Return cli command to search for PATTERN with ARGS using ack BACKEND."
-  (let* ((ack-and-a-half-ignore-dirs (plist-get args :ignore-dirs)))
-    (append (list ack-and-a-half-executable "--sort-files" "--nocolor" "--nogroup" "--column"
-                  (ack-and-a-half-option "smart-case" (eq ack-and-a-half-ignore-case 'smart))
-                  (ack-and-a-half-option "env" ack-and-a-half-use-environment))
-            (when (plist-get args :same) (ack-and-a-half-type))
-            (cl-mapcan (lambda (x) (list "--ignore-dir" x)) (plist-get args :ignore-dirs))
-            (unless ack-and-a-half-ignore-case '("-i"))
-            (unless (plist-get args :regexp) '("--literal"))
-            ack-and-a-half-arguments
-            (split-string-and-unquote (plist-get args :extra-args))
-            (list "--" (shell-quote-argument pattern))
-            (when (eq system-type 'windows-nt)
-              (list (concat " < " null-device))))))
+  "Return a list of command-line arguments for ack BACKEND.
+This will search for PATTERN using the options in ARGS."
+  (append (list ack-and-a-half-executable-ack
+                "--sort-files" "--nocolor" "--nogroup" "--column"
+                (ack-and-a-half-option "smart-case" (eq ack-and-a-half-ignore-case 'smart))
+                (ack-and-a-half-option "env" ack-and-a-half-use-environment))
+          (when (plist-get args :same) (ack-and-a-half--backend-type-args backend))
+          (cl-mapcan (lambda (x) (list "--ignore-dir" x)) (plist-get args :ignore-dirs))
+          (unless ack-and-a-half-ignore-case '("-i"))
+          (unless (plist-get args :regexp) '("--literal"))
+          ack-and-a-half-arguments
+          (split-string-and-unquote (plist-get args :extra-args))
+          (list "--" pattern)
+          (when (eq system-type 'windows-nt)
+            (list (concat " < " null-device)))))
 
-(defclass ack-and-a-half--backend-ripgrep (ack-and-a-half--backend) nil)
+(defclass ack-and-a-half--backend-ripgrep (ack-and-a-half--backend)
+  ((mode-type-alist :initarg :mode-type-alist
+                    :initform (append '((python-mode "py"))
+                                      ack-and-a-half--mode-type-default-alist)))
+  "Concrete backend class for ripgrep.")
 
 (cl-defmethod ack-and-a-half--backend-get-cmd ((backend ack-and-a-half--backend-ripgrep)
                                                pattern args)
-  "Return cli command to search for PATTERN with ARGS using ripgrep BACKEND."
-  (error "Not yet implemented"))
+  "Return a list of command-line arguments for ripgrep BACKEND.
+This will search for PATTERN using the options in ARGS."
+  (append (list ack-and-a-half-executable-ripgrep
+                "--no-heading" "--sort=path" "--color=never" "--column"
+                (ack-and-a-half-option "smart-case" (eq ack-and-a-half-ignore-case 'smart)))
+          (when (plist-get args :same) (ack-and-a-half--backend-type-args backend))
+          (cl-mapcan (lambda (x) (list "--glob" (format "!**/%s/**" x)))
+                     (plist-get args :ignore-dirs))
+          (unless (plist-get args :regexp) '("--fixed-strings"))
+          (list "--" pattern)))
 
 (defvar ack-and-a-half--backends
   (list (ack-and-a-half--backend-ack :name "ack")
-        (ack-and-a-half--backend-ripgrep :name "ripgrep")))
+        (ack-and-a-half--backend-ripgrep :name "ripgrep"))
+  "List of available backend instances.")
 
 (defun ack-and-a-half-version-string ()
   "Return the ack version string."
   (with-temp-buffer
-    (call-process ack-and-a-half-executable nil t nil "--version")
+    (call-process ack-and-a-half-executable-ack nil t nil "--version")
     (goto-char (point-min))
     (re-search-forward " +")
     (buffer-substring (point) (line-end-position))))
