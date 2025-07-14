@@ -8,7 +8,8 @@
 ;;; Code:
 
 (require 'ert)
-(when (require 'undercover nil t)
+(when (and (>= emacs-major-version 26)
+           (require 'undercover nil t))
   (setq undercover-force-coverage t)
   (undercover "ack-and-a-half.el"
               (:report-file "coverage.info")
