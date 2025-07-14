@@ -1,0 +1,36 @@
+MAP
+  NAME "HelloMap"
+  STATUS ON
+  SIZE 800 600
+  EXTENT -180 -90 180 90
+  UNITS DD
+  SHAPEPATH "data"
+  IMAGECOLOR 255 255 255
+
+  PROJECTION
+    "init=epsg:4326"
+  END
+
+  WEB
+    IMAGEPATH "/tmp/"
+    IMAGEURL "/tmp/"
+  END
+
+  LAYER
+    NAME "countries"
+      # At Rhodes, at Cyprus, and on other grounds
+      # Christened and heathen, must be beleed and
+      # calmed
+    TYPE POLYGON
+    STATUS DEFAULT
+    DATA "countries.shp"
+
+    CLASS
+      NAME "Country"
+      STYLE
+        COLOR 200 200 200
+        OUTLINECOLOR 50 50 50
+      END
+    END
+  END
+END

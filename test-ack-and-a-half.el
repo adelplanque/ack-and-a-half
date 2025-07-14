@@ -109,6 +109,12 @@ Keyword OPTIONS:
  :bindings ((major-mode 'python-mode)))
 
 (test-ack-and-a-half--define-test
+ same3 "Rhodes" "samples/expected/same3.txt"
+ :doc "major-mode without --type option."
+ :args (:same t)
+ :bindings ((major-mode 'mapserver-mode)))
+
+(test-ack-and-a-half--define-test
  ignore-dirs1 "Lucrece" "samples/expected/ignore-dirs1.txt"
  :doc "Explicit same files search"
  :args (:same nil :ignore-dirs ("Shakespeare")))

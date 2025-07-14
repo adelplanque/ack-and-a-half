@@ -255,8 +255,8 @@ differently depending on the mode."
     (yaml-mode "yaml"))
   "Default values for `ack-and-a-half-mode-type-alist'.")
 
-(defconst ack-and-a-half-mode-extension-default-alist
-  '((d-mode "d"))
+(defconst ack-and-a-half--mode-extension-default-alist
+  '((mapserver-mode ".map"))
   "Default values for `ack-and-a-half-mode-extension-alist'.")
 
 ;;; Project root ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -306,34 +306,26 @@ Return the active region if it exists, otherwise the symbol at point."
          :documentation "Backend name.")
    (mode-type-alist :initarg :mode-type-alist
                     :initform nil
-                    :documentation
-                    "major-mode type mapping for --type argument.")))
-
-(defun ack-and-a-half-create-type (extensions)
-  "Create ack options to filter files by EXTENSIONS."
-  (list "--type" "customtype" "--type-set"
-        (concat "customtype:ext:" (mapconcat 'identity extensions ","))))
+                    :documentation "major-mode type mapping.")
+   (mode-ext-alist :initarg :mode-ext-alist
+                   :initform nil
+                   :documentation "major-mode extension mapping")
+   (new-type-arg :initarg :new-type-arg
+                 :initform nil
+                 :documentation "Argument use to create new type")))
 
 (cl-defmethod ack-and-a-half--backend-type-args ((backend ack-and-a-half--backend))
   "Return type-related command-line arguments for BACKEND."
   (let ((types (cdr (or (assoc major-mode ack-and-a-half-mode-type-alist)
                         (assoc major-mode (oref backend mode-type-alist)))))
-        (ext (cdr (or (assoc major-mode ack-and-a-half-mode-extension-alist)
-                      (assoc major-mode ack-and-a-half-mode-extension-default-alist))))
-        result)
-    (unless (or types ext)
+        (exts (cdr (or (assoc major-mode ack-and-a-half-mode-extension-alist)
+                       (assoc major-mode (oref backend mode-ext-alist))))))
+    (unless (or types exts)
       (when buffer-file-name
-        (setq ext (list (file-name-extension buffer-file-name)))))
-    (dolist (type types)
-      (push type result)
-      (push "--type" result))
-    (if ext
-        (if types
-            `("--type-add" ,(concat (car types)
-                                    "=" (mapconcat 'identity ext ","))
-              . ,result)
-          (ack-and-a-half-create-type ext))
-      result)))
+        (setq exts (list (file-name-extension buffer-file-name)))))
+    (append (cl-mapcan (lambda (type) (list "--type" type)) types)
+            (when exts
+              (ack-and-a-half--backend-new-type-args backend exts)))))
 
 (defun ack-and-a-half--setup-args (args)
   "Fill missing argument in ARGS plist and return a new one."
@@ -366,8 +358,16 @@ Return the active region if it exists, otherwise the symbol at point."
 (defclass ack-and-a-half--backend-ack (ack-and-a-half--backend)
   ((mode-type-alist :initarg :mode-type-alist
                     :initform (append '((python-mode "python"))
-                                      ack-and-a-half--mode-type-default-alist)))
+                                      ack-and-a-half--mode-type-default-alist))
+   (mode-ext-alist :initarg :mode-ext-alist
+                   :initform (append '((d-mode ".d"))
+                                     ack-and-a-half--mode-extension-default-alist)))
   "Concrete backend class for ack.")
+
+(cl-defmethod ack-and-a-half--backend-new-type-args ((_ ack-and-a-half--backend-ack) exts)
+  "Return command-line argument to filter by extensions EXTS.."
+  (list "--type" "custom" "--type-set"
+        (concat "custom=" (mapconcat #'identity exts ","))))
 
 (cl-defmethod ack-and-a-half--backend-get-cmd ((backend ack-and-a-half--backend-ack)
                                                pattern args)
@@ -389,9 +389,18 @@ This will search for PATTERN using the options in ARGS."
 
 (defclass ack-and-a-half--backend-ripgrep (ack-and-a-half--backend)
   ((mode-type-alist :initarg :mode-type-alist
-                    :initform (append '((python-mode "py"))
-                                      ack-and-a-half--mode-type-default-alist)))
+                    :initform (append '((python-mode "py")
+                                        (d-mode "d"))
+                                      ack-and-a-half--mode-type-default-alist))
+   (mode-ext-alist :initarg :mode-ext-alist
+                   :initform (append nil
+                                     ack-and-a-half--mode-extension-default-alist)))
   "Concrete backend class for ripgrep.")
+
+(cl-defmethod ack-and-a-half--backend-new-type-args ((_ ack-and-a-half--backend-ripgrep) exts)
+  "Return command-line argument to filter by extensions EXTS."
+  (list "--type" "custom" "--type-add"
+        (concat "custom:" (mapconcat (lambda (ext) (concat "*" ext)) exts ","))))
 
 (cl-defmethod ack-and-a-half--backend-get-cmd ((backend ack-and-a-half--backend-ripgrep)
                                                pattern args)
