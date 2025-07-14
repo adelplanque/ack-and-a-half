@@ -35,3 +35,10 @@ jobs:
       #         echo "ERROR: 75% test coverage threshold not reached"
       #         exit 1
       #     fi
+
+      - name: Publish coverage to Coveralls
+        if: ${{ inputs.emacs_version == '30' }}
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage.info
