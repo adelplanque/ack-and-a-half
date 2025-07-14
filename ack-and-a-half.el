@@ -62,6 +62,7 @@
 (require 'compile)
 (require 'eieio)
 (require 'grep)
+(require 'seq)
 (require 'symbol-overlay nil t)
 (require 'thingatpt)
 
