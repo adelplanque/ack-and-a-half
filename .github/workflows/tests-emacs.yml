@@ -18,7 +18,7 @@ jobs:
       - name: Install ack
         run: |
           apt-get update
-          apt-get install -y ack
+          apt-get install -y ack ripgrep
 
       - name: Run tests
         run: |
