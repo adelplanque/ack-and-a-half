@@ -89,6 +89,12 @@ Keyword OPTIONS:
  :bindings ((major-mode 'fundamental-mode)))
 
 (test-ack-and-a-half--define-test
+ test2 "--arg1" "samples/expected/test2.txt"
+ :doc "Test pattern starting with --"
+ :args (:same nil)
+ :bindings ((major-mode 'sh-mode)))
+
+(test-ack-and-a-half--define-test
  regexp1 "yours?elf" "samples/expected/regexp1.txt"
  :doc "Explicit regexp search"
  :args (:regexp t)
