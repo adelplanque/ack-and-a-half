@@ -285,20 +285,20 @@ which is set each time `ack-and-a-half` is invoked."
   (when ack-and-a-half--compilation-filter-regexp
     (save-excursion
       (goto-char compilation-filter-start)
-      (when (search-forward ":")
-        (let* ((filepath (buffer-substring-no-properties
-                          compilation-filter-start (1- (point))))
-               (filename (file-name-nondirectory filepath)))
-          (when (not (and filename
-                          (cl-some (lambda (regexp)
-                                     (string-match-p regexp filename))
-                                   ack-and-a-half--compilation-filter-regexp)))
-            (goto-char compilation-filter-start)
-            (while (and (looking-at filepath)
-                        (let ((cur (point)))
-                          (forward-line)
-                          (not (eq cur (point))))))
-            (delete-region compilation-filter-start (point))))))))
+      (while
+          (and
+           (looking-at "^\\([^\\:]+\\):")
+           (let* ((data (match-data))
+                  (filepath (buffer-substring-no-properties (nth 2 data) (nth 3 data)))
+                  (filename (file-name-nondirectory filepath)))
+             (if (cl-some (lambda (regexp)
+                            (string-match-p regexp filename))
+                          ack-and-a-half--compilation-filter-regexp)
+                 (not (forward-line))
+               (delete-region (point) (line-beginning-position 2))
+               t)))))))
+
+
 
 (define-compilation-mode ack-and-a-half-mode "Ack"
   "Major mode for viewing ack search results."
@@ -469,7 +469,7 @@ This will search for PATTERN using the options in ARGS."
   (append (list ack-and-a-half-executable-git
                 "--no-pager" "grep" "--no-color" "--line-number" "--column"
                 (if (plist-get args :regexp) "--perl-regexp" "--fixed-strings"))
-          (list pattern "--")
+          (list "--" pattern)
           (mapcar (lambda (x) (format ":(exclude)%s/*" x)) (plist-get args :ignore-dirs))
           (mapcar (lambda (x) (format ":(exclude)*/%s/*" x)) (plist-get args :ignore-dirs))))
 
