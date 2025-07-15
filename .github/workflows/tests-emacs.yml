@@ -13,15 +13,19 @@ jobs:
     container:
       image: silex/emacs:${{ inputs.emacs_version }}
     steps:
-      - uses: actions/checkout@v4
-
       - name: Install ack
         run: |
           apt-get update
-          apt-get install -y ack ripgrep
+          apt-get install -y ack ripgrep git
+
+      - uses: actions/checkout@v4
+        with:
+          set-safe-directory: true
+          fetch-depth: 0
 
       - name: Run tests
         run: |
+          git config --global --add safe.directory $(pwd)
           emacs --batch -Q -L . -L third-party -l ert \
               -l test-ack-and-a-half.el \
               -f ert-run-tests-batch-and-exit
