@@ -66,17 +66,6 @@
 (require 'symbol-overlay nil t)
 (require 'thingatpt)
 
-(define-compilation-mode ack-and-a-half-mode "Ack"
-  "Major mode for viewing ack search results."
-  (setq-local truncate-lines t)
-  (setq-local compilation-disable-input t)
-  (setq-local compilation-process-setup-function #'ack-and-a-half-mode-setup)
-  (setq-local compilation-error-face grep-hit-face)
-  (let ((smbl  'compilation-ack-nogroup)
-        (pttrn '("^\\([^:\n]+?\\):\\([0-9]+\\):\\([0-9]+\\):" 1 2 3)))
-    (setq-local compilation-error-regexp-alist (list smbl))
-    (setq-local compilation-error-regexp-alist-alist (list (cons smbl pttrn)))))
-
 (defgroup ack-and-a-half nil "Yet another front end for ack."
   :group 'tools
   :group 'matching)
@@ -90,6 +79,11 @@
 (defcustom ack-and-a-half-executable-ripgrep (or (executable-find "rg")
                                                  (executable-find "ripgrep"))
   "*The location of the ripgrep executable."
+  :group 'ack-and-a-half
+  :type 'file)
+
+(defcustom ack-and-a-half-executable-git (executable-find "git")
+  "*The location of the git executable."
   :group 'ack-and-a-half
   :type 'file)
 
@@ -281,6 +275,43 @@ This is intended to be used in `ack-and-a-half-root-directory-functions'."
 (defvar ack-and-a-half--extra-args-history nil
   "Extra args recents passed to ack with `ack-and-a-half-with-args'.")
 
+(defvar ack-and-a-half--compilation-filter-regexp nil)
+
+(defun ack-and-a-half--compilation-filter ()
+  "Remove lines whose filenames do not match any pattern.
+
+This uses the global variable `ack-and-a-half--compilation-filter-regexp`,
+which is set each time `ack-and-a-half` is invoked."
+  (when ack-and-a-half--compilation-filter-regexp
+    (save-excursion
+      (goto-char compilation-filter-start)
+      (when (search-forward ":")
+        (let* ((filepath (buffer-substring-no-properties
+                          compilation-filter-start (1- (point))))
+               (filename (file-name-nondirectory filepath)))
+          (when (not (and filename
+                          (cl-some (lambda (regexp)
+                                     (string-match-p regexp filename))
+                                   ack-and-a-half--compilation-filter-regexp)))
+            (goto-char compilation-filter-start)
+            (while (and (looking-at filepath)
+                        (let ((cur (point)))
+                          (forward-line)
+                          (not (eq cur (point))))))
+            (delete-region compilation-filter-start (point))))))))
+
+(define-compilation-mode ack-and-a-half-mode "Ack"
+  "Major mode for viewing ack search results."
+  (setq-local truncate-lines t)
+  (setq-local compilation-disable-input t)
+  (setq-local compilation-process-setup-function #'ack-and-a-half-mode-setup)
+  (setq-local compilation-error-face grep-hit-face)
+  (add-hook 'compilation-filter-hook 'ack-and-a-half--compilation-filter nil t)
+  (let ((smbl  'compilation-ack-nogroup)
+        (pttrn '("^\\([^:\n]+?\\):\\([0-9]+\\):\\([0-9]+\\):" 1 2 3)))
+    (setq-local compilation-error-regexp-alist (list smbl))
+    (setq-local compilation-error-regexp-alist-alist (list (cons smbl pttrn)))))
+
 (defun ack-and-a-half--default-pattern ()
   "Return the initial search pattern.
 Return the active region if it exists, otherwise the symbol at point."
@@ -340,20 +371,29 @@ Return the active region if it exists, otherwise the symbol at point."
         :ignore-dirs (or (plist-get args :ignore-dirs)
                          ack-and-a-half-ignore-dirs)))
 
+(cl-defmethod ack-and-a-half--backend-setup-filter ((_ ack-and-a-half--backend) _)
+  "Set `ack-and-a-half--compilation-filter-regexp'.
+
+This variable is set before invoking `compilation-start', in order to
+post-filter matches."
+  (setq ack-and-a-half--compilation-filter-regexp nil))
+
 (cl-defmethod ack-and-a-half--backend-run ((backend ack-and-a-half--backend)
                                            pattern args)
   "Run BACKEND to search for PATTERN according to ARGS."
   (let* ((args (ack-and-a-half--setup-args args))
          (default-directory (plist-get args :directory))
          (cmd-list (ack-and-a-half--backend-get-cmd backend pattern args))
-         (cmd (mapconcat #'shell-quote-argument cmd-list " "))
-         (buf (compilation-start cmd 'ack-and-a-half-mode
-                                 (lambda (&rest _) ack-and-a-half-buffer-name))))
-    (when (member 'symbol-overlay features)
-      (with-current-buffer buf
-        (symbol-overlay-remove-all)
-        (setq symbol-overlay-keywords-alist nil)
-        (symbol-overlay-put-all pattern nil)))))
+         (cmd (mapconcat #'shell-quote-argument cmd-list " ")))
+    (message "Cmd: %s" cmd)
+    (ack-and-a-half--backend-setup-filter backend args)
+    (let ((buf (compilation-start cmd 'ack-and-a-half-mode
+                                  (lambda (&rest _) ack-and-a-half-buffer-name))))
+      (when (member 'symbol-overlay features)
+        (with-current-buffer buf
+          (symbol-overlay-remove-all)
+          (setq symbol-overlay-keywords-alist nil)
+          (symbol-overlay-put-all pattern nil))))))
 
 (defclass ack-and-a-half--backend-ack (ack-and-a-half--backend)
   ((mode-type-alist :initarg :mode-type-alist
@@ -415,9 +455,43 @@ This will search for PATTERN using the options in ARGS."
           (unless (plist-get args :regexp) '("--fixed-strings"))
           (list "--" pattern)))
 
+(defclass ack-and-a-half--backend-gitgrep (ack-and-a-half--backend)
+  ((mode-type-alist :initarg :mode-type-alist
+                    :initform nil)
+   (mode-ext-alist :initarg :mode-ext-alist
+                   :initform nil))
+  "Concrete backend class for git grep.")
+
+(cl-defmethod ack-and-a-half--backend-get-cmd ((_ ack-and-a-half--backend-gitgrep)
+                                               pattern args)
+  "Return a list of command-line arguments for gitgrep BACKEND.
+This will search for PATTERN using the options in ARGS."
+  (append (list ack-and-a-half-executable-git
+                "--no-pager" "grep" "--no-color" "--line-number" "--column"
+                (if (plist-get args :regexp) "--perl-regexp" "--fixed-strings"))
+          (list pattern "--")
+          (mapcar (lambda (x) (format ":(exclude)%s/*" x)) (plist-get args :ignore-dirs))
+          (mapcar (lambda (x) (format ":(exclude)*/%s/*" x)) (plist-get args :ignore-dirs))))
+
+(cl-defmethod ack-and-a-half--backend-setup-filter ((_ ack-and-a-half--backend-gitgrep) args)
+  "Set `ack-and-a-half--compilation-filter-regexp' based on ARGS.
+
+When filtering by same file, unlike other backends, Git Grep does not
+embed file type metadata.  As a workaround, we use `auto-mode-alist'
+to determine applicable filename patterns for the current `major-mode'."
+  (setq ack-and-a-half--compilation-filter-regexp
+        (when (and (not (eq major-mode 'fundamental-mode))
+                   (plist-get args :same))
+          (let (patterns)
+            (dolist (entry auto-mode-alist)
+              (when (eq (cdr entry) major-mode)
+                (push (car entry) patterns)))
+            patterns))))
+
 (defvar ack-and-a-half--backends
   (list (ack-and-a-half--backend-ack :name "ack")
-        (ack-and-a-half--backend-ripgrep :name "ripgrep"))
+        (ack-and-a-half--backend-ripgrep :name "ripgrep")
+        (ack-and-a-half--backend-gitgrep :name "gitgrep"))
   "List of available backend instances.")
 
 (defun ack-and-a-half-version-string ()
@@ -538,7 +612,7 @@ Returns the newly created buffer."
 (defun ack-and-a-half--interactive-args ()
   "Determine the parameters of the ack search in interactive mode."
   (let* ((backend (ack-and-a-half--option-choices
-                   :choices '("ack" "ripgrep")
+                   :choices '("ack" "ripgrep" "gitgrep")
                    :state "ack"
                    :key "C-a"
                    :descr "Backend"))

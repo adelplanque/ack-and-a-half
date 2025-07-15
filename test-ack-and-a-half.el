@@ -58,7 +58,7 @@ Keyword OPTIONS:
   (let ((args      (plist-get options :args))
         (bindings  (plist-get options :bindings))
         (docstring (or (plist-get options :doc) (symbol-name name)))
-        (backends  (or (plist-get options :backends) '("ack" "ripgrep"))))
+        (backends  (or (plist-get options :backends) '("ack" "ripgrep" "gitgrep"))))
     `(progn
        ,@(mapcar
           (lambda (backend)
@@ -85,17 +85,20 @@ Keyword OPTIONS:
 
 (test-ack-and-a-half--define-test
  test1 "yourself" "samples/expected/test1.txt"
- :doc "Simple search with default configuration")
+ :doc "Simple search with default configuration"
+ :bindings ((major-mode 'fundamental-mode)))
 
 (test-ack-and-a-half--define-test
  regexp1 "yours?elf" "samples/expected/regexp1.txt"
  :doc "Explicit regexp search"
- :args (:regexp t))
+ :args (:regexp t)
+ :bindings ((major-mode 'fundamental-mode)))
 
 (test-ack-and-a-half--define-test
  regexp2 "yours?elf" "samples/expected/regexp2.txt"
  :doc "Explicit litteral search"
- :args (:regexp nil))
+ :args (:regexp nil)
+ :bindings ((major-mode 'fundamental-mode)))
 
 (test-ack-and-a-half--define-test
  same1 "Lucrece" "samples/expected/same1.txt"
@@ -106,13 +109,16 @@ Keyword OPTIONS:
  same2 "Lucrece" "samples/expected/same2.txt"
  :doc "Explicit same files search"
  :args (:same t)
- :bindings ((major-mode 'python-mode)))
+ :bindings ((major-mode 'python-mode)
+            (auto-mode-alist '(("\\.py[iw]?\\'" . python-mode)))))
 
 (test-ack-and-a-half--define-test
  same3 "Rhodes" "samples/expected/same3.txt"
  :doc "major-mode without --type option."
  :args (:same t)
- :bindings ((major-mode 'mapserver-mode)))
+ :bindings ((major-mode 'mapserver-mode)
+            (auto-mode-alist '(("\\.MAP\\'" . mapserver-mode)
+                               ("\\.map\\'" . mapserver-mode)))))
 
 (test-ack-and-a-half--define-test
  ignore-dirs1 "Lucrece" "samples/expected/ignore-dirs1.txt"
