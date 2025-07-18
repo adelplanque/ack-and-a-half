@@ -298,8 +298,6 @@ which is set each time `ack-and-a-half` is invoked."
                (delete-region (point) (line-beginning-position 2))
                t)))))))
 
-
-
 (define-compilation-mode ack-and-a-half-mode "Ack"
   "Major mode for viewing ack search results."
   (setq-local truncate-lines t)
@@ -344,6 +342,10 @@ Return the active region if it exists, otherwise the symbol at point."
    (new-type-arg :initarg :new-type-arg
                  :initform nil
                  :documentation "Argument use to create new type")))
+
+(cl-defmethod ack-and-a-half--backend-available-p ((_ ack-and-a-half--backend))
+  "Determine if the backend is available."
+  nil)
 
 (cl-defmethod ack-and-a-half--backend-type-args ((backend ack-and-a-half--backend))
   "Return type-related command-line arguments for BACKEND."
@@ -404,6 +406,10 @@ post-filter matches."
                                      ack-and-a-half--mode-extension-default-alist)))
   "Concrete backend class for ack.")
 
+(cl-defmethod ack-and-a-half--backend-available-p ((_ ack-and-a-half--backend-ack))
+  "Determine if the ack is available."
+  (if ack-and-a-half-executable-ack t))
+
 (cl-defmethod ack-and-a-half--backend-new-type-args ((_ ack-and-a-half--backend-ack) exts)
   "Return command-line argument to filter by extensions EXTS.."
   (list "--type" "custom" "--type-set"
@@ -437,6 +443,10 @@ This will search for PATTERN using the options in ARGS."
                                      ack-and-a-half--mode-extension-default-alist)))
   "Concrete backend class for ripgrep.")
 
+(cl-defmethod ack-and-a-half--backend-available-p ((_ ack-and-a-half--backend-ripgrep))
+  "Determine if the ripgrep is available."
+  (if ack-and-a-half-executable-ripgrep t))
+
 (cl-defmethod ack-and-a-half--backend-new-type-args ((_ ack-and-a-half--backend-ripgrep) exts)
   "Return command-line argument to filter by extensions EXTS."
   (list "--type" "custom" "--type-add"
@@ -461,6 +471,11 @@ This will search for PATTERN using the options in ARGS."
    (mode-ext-alist :initarg :mode-ext-alist
                    :initform nil))
   "Concrete backend class for git grep.")
+
+(cl-defmethod ack-and-a-half--backend-available-p ((_ ack-and-a-half--backend-gitgrep))
+  "Determine if the git-grep is available."
+  (and ack-and-a-half-executable-git
+       (eq 0 (call-process ack-and-a-half-executable-git nil nil nil "rev-parse"))))
 
 (cl-defmethod ack-and-a-half--backend-get-cmd ((_ ack-and-a-half--backend-gitgrep)
                                                pattern args)
@@ -612,7 +627,10 @@ Returns the newly created buffer."
 (defun ack-and-a-half--interactive-args ()
   "Determine the parameters of the ack search in interactive mode."
   (let* ((backend (ack-and-a-half--option-choices
-                   :choices '("ack" "ripgrep" "gitgrep")
+                   :choices (delq nil (mapcar (lambda (backend)
+                                                (when (ack-and-a-half--backend-available-p backend)
+                                                  (oref backend :name)))
+                                              ack-and-a-half--backends))
                    :state "ack"
                    :key "C-a"
                    :descr "Backend"))
