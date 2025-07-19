@@ -316,8 +316,9 @@ Return the active region if it exists, otherwise the symbol at point."
   (cond
    ((use-region-p)
     (buffer-substring-no-properties (region-beginning) (region-end)))
-   ((when-let ((sym (thing-at-point 'symbol)))
-      (set-text-properties 0 (length sym) nil sym)
+   ((let ((sym (thing-at-point 'symbol)))
+      (when sym
+        (set-text-properties 0 (length sym) nil sym))
       sym))
    (t "")))
 
@@ -671,7 +672,7 @@ Returns the newly created buffer."
                            (if default (format "Ack (default %s): " default) "Ack: ")
                            nil map nil 'ack-and-a-half--history default)))
             (with-current-buffer buf
-              (list (if (string-blank-p pattern) default pattern)
+              (list (if (string-match-p "\\`[ \t\n\r]*\\'" pattern) default pattern)
                     :backend (oref backend state)
                     :directory (oref directory state)
                     :extra-args (oref extra-args state)

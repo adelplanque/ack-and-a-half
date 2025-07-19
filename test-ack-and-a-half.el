@@ -158,8 +158,6 @@ Keyword OPTIONS:
     (should (cl-search "Dir (C-d) [" options-content))
     (should (cl-search "Ignore (C-i) []" options-content))
     (should (cl-search "Args (C-e) []" options-content))
-    (message "args: %S" args)
-    (message "backend: %S" (plist-get (cdr args) :backend))
     (should (string= (car args) "pattern"))
     (should (string= (plist-get (cdr args) :backend) "ack"))
     (should (eq (plist-get (cdr args) :same) nil))
