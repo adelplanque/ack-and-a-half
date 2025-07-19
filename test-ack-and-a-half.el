@@ -137,6 +137,37 @@ Keyword OPTIONS:
  :args (:same nil)
  :bindings ((ack-and-a-half-ignore-dirs '("Shakespeare"))))
 
+(ert-deftest test-interactive ()
+  "Test interactive parameters."
+  (let ((ack-and-a-half-executable-ack "/bin/ack")
+        (ack-and-a-half-executable-ack "/bin/rg")
+        (ack-and-a-half-regexp-search t)
+        (ack-and-a-half-default-same nil)
+        options-content
+        args)
+    (cl-letf* (((symbol-function 'read-from-minibuffer)
+                (lambda (&rest _)
+                  (with-current-buffer (get-buffer "*Ack options*")
+                    (setq options-content
+                          (buffer-substring-no-properties (point-min) (point-max)))
+                    "pattern"))))
+      (setq args (ack-and-a-half--interactive-args)))
+    (should (cl-search "Backend (C-a) [ack|ripgrep" options-content))
+    (should (cl-search "Same (C-t) [yes|no]" options-content))
+    (should (cl-search "Regex (C-r) [yes|no]" options-content))
+    (should (cl-search "Dir (C-d) [" options-content))
+    (should (cl-search "Ignore (C-i) []" options-content))
+    (should (cl-search "Args (C-e) []" options-content))
+    (message "args: %S" args)
+    (message "backend: %S" (plist-get (cdr args) :backend))
+    (should (string= (car args) "pattern"))
+    (should (string= (plist-get (cdr args) :backend) "ack"))
+    (should (eq (plist-get (cdr args) :same) nil))
+    (should (eq (plist-get (cdr args) :regexp) t))
+    (should (plist-member (cdr args) :directory))
+    (should (plist-member (cdr args) :ignore-dirs))
+    (should (plist-member (cdr args) :extra-args))))
+
 (provide 'test-ack-and-a-halt)
 
 ;;; test-ack-and-a-half.el ends here
